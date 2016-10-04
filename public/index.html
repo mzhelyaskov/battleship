@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ButleShip</title>
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet" />
+    <link href="bootstrap/css/bootstrap-theme.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    <script src="js/handlebars.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div id="battlefield-placeholder"></div>
+            </div>
+            <div class="col-md-6">
+                <div id="port"></div>
+            </div>
+        </div>
+    </div>
+    <img id="ball" src="../ball.svg">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script id="battlefield-cell-template" type="text/x-handlebars-template">
+        <td class="battlefield-cell battlefield-cell__empty" data-y="{{ row }}" data-x="{{ col }}">
+            {{{ marker }}}
+        </td>
+    </script>
+    <script id="port-line" type="text/x-handlebars-template">
+        <div class="row">
+            <div class="col-md-12">
+                {{#each ships}}
+                <div class="port-ship" style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;">
+                    <div data-id="{{id}}" data-length="{{size}}" data-position="{{position}}" class="{{className}}"
+                         style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;"></div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </script>
+    <script src="js/script.js"></script>
+</body>
+</html>
