@@ -6,37 +6,27 @@ var fieldSize = {
 };
 var letters = "А,Б,В,Г,Д,Е,Ж,З,И,К".split(",");
 var rows = [];
+mapOfBusyAndFreeCells = [];
 
 document.getElementById('battlefield-placeholder').innerHTML = "";
 for (var row = 0; row < fieldSize.height; row++) {
+    mapOfBusyAndFreeCells[row] = [];
     var cellsHtml = [];
     for (var col = 0; col < fieldSize.width; col++) {
-        var marker = "";
+        var cellLabel = "";
         if (col === 0) {
-            marker += '<div class="marker marker-row">' + (row + 1) + "</div>"
+            cellLabel += '<div class="marker marker-row">' + (row + 1) + "</div>"
         }
         if (row === 0) {
-            marker += '<div class="marker marker-col">' + letters[col] + "</div>"
+            cellLabel += '<div class="marker marker-col">' + letters[col] + "</div>"
         }
-        cellsHtml.push(cellTemplate({col: col, row: row, marker: marker}));
+        cellsHtml.push(cellTemplate({col: col, row: row, cellLabel: cellLabel}));
+        mapOfBusyAndFreeCells[row][col] = marker.FREE;
     }
     rows.push('<tr class="battlefield-row">' + cellsHtml.join("") + "</tr>")
 }
 var placeholder = document.getElementById("battlefield-placeholder");
-placeholder.innerHTML = '<table class="battlefield-table">' + rows.join("") + "</table>";
-
-function createElement(innerHTML) {
-    var elem = document.createElement('div');
-    elem.innerHTML = innerHTML;
-    return elem.firstElementChild;
-}
-
-function getShipId() {
-    for (var e, t = 12, n = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", id = "", r = 0; t > r; r++)
-        e = Math.floor(Math.random() * n.length),
-            id += n.substring(e, e + 1);
-    return id
-}
+placeholder.innerHTML = '<table id="battlefield-table">' + rows.join("") + "</table>";
 
 function createShip(size, position, id) {
     id = id || "";
@@ -92,6 +82,8 @@ function collocateShips() {
 
 collocateShips();
 
+new PortDragZone(document.getElementById('port'));
+new BattleFieldDropTarget(document.getElementById('battlefield-table'));
 
 
 
@@ -131,141 +123,125 @@ collocateShips();
 
 
 
-function getCords(elem) { // кроме IE8-
-    var box = elem.getBoundingClientRect();
-    return {
-        top: box.top + pageYOffset,
-        left: box.left + pageXOffset
-    };
-}
 
-var DragManager = new function() {
-
-    /**
-    * составной объект для хранения информации о переносе:
-    * {
-    *   elem - элемент, на котором была зажата мышь
-    *   avatar - аватар
-    *   downX/downY - координаты, на которых был mousedown
-    *   shiftX/shiftY - относительный сдвиг курсора от угла элемента
-    * }
-    */
-    var dragObject = {};
-    var self = this;
-
-    document.onmousedown = onMouseDown;
-    document.onmousemove = onMouseMove;
-    document.onmouseup = onMouseUp;
-
-    function onMouseDown(e) {
-        if (e.which != 1) return;
-        var elem = e.target.closest('.draggable');
-        if (!elem) return;
-        dragObject.elem = elem;
-        dragObject.downX = e.pageX;
-        dragObject.downY = e.pageY;
-    }
-
-    function onMouseMove(e) {
-        if (!dragObject.elem) return;
-        if (!dragObject.avatar) {
-            var moveX = e.pageX - dragObject.downX;
-            var moveY = e.pageY - dragObject.downY;
-            if (Math.abs(moveX) < 3 && Math.abs(moveY) < 3) {
-                return;
-            }
-            dragObject.avatar = createAvatar(e);
-            if (!dragObject.avatar) {
-                dragObject = {};
-                return;
-            }
-            var cords = getCords(dragObject.avatar);
-            dragObject.shiftX = dragObject.downX - cords.left;
-            dragObject.shiftY = dragObject.downY - cords.top;
-            document.body.appendChild(dragObject.avatar);
-            dragObject.avatar.style.zIndex = 9999;
-            dragObject.avatar.style.position = 'absolute';
-        }
-        dragObject.avatar.style.left = e.pageX - dragObject.shiftX + 'px';
-        dragObject.avatar.style.top = e.pageY - dragObject.shiftY + 'px';
-        return false;
-    }
-
-    function createAvatar(e) {
-        var avatar = dragObject.elem;
-        var old = {
-            parent: avatar.parentNode,
-            nextSibling: avatar.nextSibling,
-            position: avatar.position || ''
-            // left: avatar.left || '',
-            // top: avatar.top || '',
-            // zIndex: avatar.zIndex || ''
-        };
-        avatar.rollback = function() {
-            old.parent.insertBefore(avatar, old.nextSibling);
-            avatar.style.position = old.position;
-            // avatar.style.left = old.left;
-            // avatar.style.top = old.top;
-            // avatar.style.zIndex = old.zIndex
-        };
-        return avatar;
-    }
-
-    function onMouseUp(e) {
-        if (dragObject.avatar) {
-            var dropElem = findBattleField(e);
-            if (!dropElem) {
-                self.onDragCancel(dragObject);
-            } else {
-                self.onDragEnd(dragObject, dropElem);
-            }
-        }
-        dragObject = {};
-    }
-
-    function findBattleField(event) {
-        dragObject.avatar.hidden = true;
-        var elem = document.elementFromPoint(event.clientX, event.clientY);
-        dragObject.avatar.hidden = false;
-        if (elem == null) {
-            return null;
-        }
-        return elem.closest('.battlefield-table');
-    }
-
-    this.onDragEnd = function(dragObject, dropElem) {};
-    this.onDragCancel = function(dragObject) {};
-};
-
-DragManager.onDragCancel = function (dragObject) {
-    dragObject.avatar.rollback();
-};
-
-DragManager.onDragEnd = function (dragObject, dropElem) {
+// function getCords(elem) { // кроме IE8-
+//     var box = elem.getBoundingClientRect();
+//     return {
+//         top: box.top + pageYOffset,
+//         left: box.left + pageXOffset
+//     };
+// }
+//
+// var DragManager = new function() {
+//     var dragObject = {};
+//     var self = this;
+//
+//     document.onmousedown = onMouseDown;
+//     document.onmousemove = onMouseMove;
+//     document.onmouseup = onMouseUp;
+//
+//     function onMouseDown(e) {
+//         if (e.which != 1) return;
+//         var elem = e.target.closest('.draggable');
+//         if (!elem) return;
+//         dragObject.elem = elem;
+//         dragObject.downX = e.pageX;
+//         dragObject.downY = e.pageY;
+//     }
+//
+//     function onMouseMove(e) {
+//         if (!dragObject.elem) return;
+//         if (!dragObject.avatar) {
+//             var moveX = e.pageX - dragObject.downX;
+//             var moveY = e.pageY - dragObject.downY;
+//             if (Math.abs(moveX) < 3 && Math.abs(moveY) < 3) {
+//                 return;
+//             }
+//             dragObject.avatar = createAvatar(e);
+//             if (!dragObject.avatar) {
+//                 dragObject = {};
+//                 return;
+//             }
+//             var cords = getCords(dragObject.avatar);
+//             dragObject.shiftX = dragObject.downX - cords.left;
+//             dragObject.shiftY = dragObject.downY - cords.top;
+//             document.body.appendChild(dragObject.avatar);
+//             dragObject.avatar.style.zIndex = 9999;
+//             dragObject.avatar.style.position = 'absolute';
+//         }
+//         dragObject.avatar.style.left = e.pageX - dragObject.shiftX + 'px';
+//         dragObject.avatar.style.top = e.pageY - dragObject.shiftY + 'px';
+//
+//
+//         var newDropTarget = findDropTarget(e);
+//         if (newDropTarget != dropTarget) {
+//             // уведомить старую и новую зоны-цели о том, что с них ушли/на них зашли
+//             dropTarget && dropTarget.onDragLeave(newDropTarget, avatar, e);
+//             newDropTarget && newDropTarget.onDragEnter(dropTarget, avatar, e);
+//         }
+//         dropTarget = newDropTarget;
+//         dropTarget && dropTarget.onDragMove(avatar, e);
+//
+//         return false;
+//     }
+//
+//     function createAvatar(e) {
+//         var avatar = dragObject.elem;
+//         var old = {
+//             parent: avatar.parentNode,
+//             nextSibling: avatar.nextSibling,
+//             position: avatar.position || ''
+//             // left: avatar.left || '',
+//             // top: avatar.top || '',
+//             // zIndex: avatar.zIndex || ''
+//         };
+//         avatar.rollback = function() {
+//             old.parent.insertBefore(avatar, old.nextSibling);
+//             avatar.style.position = old.position;
+//             // avatar.style.left = old.left;
+//             // avatar.style.top = old.top;
+//             // avatar.style.zIndex = old.zIndex
+//         };
+//         return avatar;
+//     }
+//
+//     function onMouseUp(e) {
+//         if (dragObject.avatar) {
+//             var dropElem = findBattleField(e);
+//             if (!dropElem) {
+//                 self.onDragCancel(dragObject);
+//             } else {
+//                 self.onDragEnd(dragObject, dropElem);
+//             }
+//         }
+//         dragObject = {};
+//     }
+//
+//     function findBattleField(event) {
+//         dragObject.avatar.hidden = true;
+//         var elem = document.elementFromPoint(event.clientX, event.clientY);
+//         dragObject.avatar.hidden = false;
+//         if (elem == null) {
+//             return null;
+//         }
+//         return elem.closest('.battlefield-table');
+//     }
+//
+//     this.onDragEnd = function(dragObject, dropElem) {};
+//     this.onDragCancel = function(dragObject) {};
+// };
+//
+// DragManager.onDragCancel = function (dragObject) {
+//     dragObject.avatar.rollback();
+// };
+//
+// DragManager.onDragEnd = function (dragObject, dropElem) {
     // dragObject.elem.style.display = 'none';
     // dropElem.classList.add('computer-smile');
     // setTimeout(function() {
     //     dropElem.classList.remove('computer-smile');
     // }, 200);
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// };
 
 
 

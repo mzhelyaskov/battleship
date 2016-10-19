@@ -1,3 +1,28 @@
+a, abbr, acronym, address, applet, article, aside, audio, b, big, blockquote, body, canvas, caption, center, cite, code, dd, del, details, dfn, div, dl, dt, em, embed, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, hgroup, html, i, iframe, img, ins, kbd, label, legend, li, mark, menu, nav, object, ol, output, p, pre, q, ruby, s, samp, section, small, span, strike, strong, sub, summary, sup, table, tbody, td, tfoot, th, thead, time, tr, tt, u, ul, var, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+.body {
+    font: 1em/1.25 "PT Sans", arial, sans-serif;
+    /*overflow-y: scroll;*/
+    /*cursor: default;*/
+    /*min-height: 100%;*/
+    /*background: #fff;*/
+    height: 100%
+}
+
+#point {
+    position: absolute !important;
+    border: 1px solid black;
+    border-radius: 50%;
+    width: 0;
+    height: 0
+}
+
 .container {
     margin: 50px auto;
 }
@@ -7,11 +32,14 @@
 }
 
 .battlefield-cell {
-    position: relative;
     border: 1px solid #B4B4FF;
     padding: 0;
-    width: 2em;
+}
+
+.battlefield-cell-content {
+    position: relative;
     height: 2em;
+    width: 2em;
 }
 
 .marker-row {
@@ -35,17 +63,9 @@
     z-index: -1;
 }
 
-.battlefield-table {
+#battlefield-table {
     border-collapse: collapse;
     display: inline-block;
-}
-
-body, html {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font: inherit;
-    vertical-align: baseline;
 }
 
 .port-ship {
@@ -57,9 +77,15 @@ body, html {
 }
 
 .ship {
+    position: absolute !important;
     z-index: 2;
     box-sizing: border-box;
     border: 2px solid #00f;
     background: rgba(0,0,255,.05);
     margin: -1px;
+}
+
+.ship-placeholder {
+    border-color: #40BF44;
+    background: rgba(64,191,68,.05)
 }

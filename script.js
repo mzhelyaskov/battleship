@@ -5274,6 +5274,10 @@ function(e) {
         }
     })
 }(jQuery),
+    
+    
+    
+    
 function(e) {
     e.fn.shake = function(t) {
         var n = {
@@ -5298,6 +5302,12 @@ function(e) {
         })
     }
 }(jQuery),
+    
+    
+    
+    
+    
+    
 function(e) {
     function t(e, t) {
         if (!(e.originalEvent.touches.length > 1)) {
@@ -5339,6 +5349,10 @@ function(e) {
         }
     }
 }(jQuery),
+    
+    
+    
+
 function(e) {
     "function" == typeof define && define.amd && define.amd.jQuery ? define(["jquery"], e) : e(jQuery)
 }(function(e) {
@@ -5551,12 +5565,12 @@ var sprintf = function(e) {
         }
         return i
     }
-    function l() {
+    function topLimit() {
         var t = "http";
         return "https:" == window.location.protocol && (t += "s"),
         t
     }
-    function c() {
+    function leftLimit() {
         var t = "ws";
         return "https:" == window.location.protocol && (t += "s"),
         t = "wss"
@@ -5608,27 +5622,27 @@ var sprintf = function(e) {
             i() ? r() : $(window).on("load", r)
         }
     };
-    jQuery(function(i) {
+    jQuery(function($) {
         function o(e) {
             for (var t in Ct)
                 if (e === Ct[t])
                     return t;
             return !1
         }
-        function a() {
+        function createFieldAndInitializeAdditionalData() {
             var e, t, n = [], i = [];
-            Pt = [],
+            shipObjects = [],
             ht.find(".battlefield-table-placeholder").html("");
-            for (var r = 0; r < vt.height; r++, i = []) {
-                At[r] = [],
+            for (var r = 0; r < battleFieldSize.height; r++, i = []) {
+                FieldBusyOrFreeCellMap[r] = [],
                 St[r] = [],
                 Dt[r] = [];
-                for (var o = 0; o < vt.width; o++)
+                for (var o = 0; o < battleFieldSize.width; o++)
                     t = "&#160;",
                     0 === o && (t += '<div class="marker marker__row">' + (r + 1) + "</div>"),
                     0 === r && (t += '<div class="marker marker__col">' + Et[o] + "</div>"),
                     i.push('<td class="battlefield-cell battlefield-cell__empty"><div class="battlefield-cell-content" data-y="' + r + '" data-x="' + o + '" ><span class="z"></span>' + t + "</div></td>"),
-                    At[r][o] = yt.FREE,
+                    FieldBusyOrFreeCellMap[r][o] = marker.FREE,
                     St[r][o] = Ct.INITIALIZED,
                     Dt[r][o] = Ct.INITIALIZED;
                 n.push('<tr class="battlefield-row">' + i.join("") + "</tr>")
@@ -5636,48 +5650,74 @@ var sprintf = function(e) {
             e = '<table class="battlefield-table">' + n.join("") + "</table>",
             ht.find(".battlefield-table-placeholder").html(e)
         }
-        function u(e) {
-            for (var t = [], n = 0; n < Pt.length; n++)
-                if (Pt[n].id != e)
-                    t.push(Pt[n]);
-                else
-                    for (var i, r = Pt[n].coords, o = 0; o < r.length; o++)
-                        i = r[o],
-                        At[i.y][i.x] = yt.FREE;
-            Pt = t
+        /**
+         * В функцию попал ID корабля который начали перетискивать
+         * Удаляет объект по ID из списка объъектов на боевом поле
+         * и отмечаем что эти поля освободились в объекте который
+         * хранит целую картину свободных и занятых объектов.
+         * */
+        function deleteObjectsFromShipObjectsListAndMakeFreeNeddedCells(shipId) {
+            var newShipObjectsList = [];
+            for (var j = 0; j < shipObjects.length; j++) {
+                var shipObject = shipObjects[j];
+                if (shipObject.id != shipId) {
+                    newShipObjectsList.push(shipObject);
+                } else {
+                    var coords = shipObject.coords;
+                    for (var i = 0; i < coords.length; i++) {
+                        var deck = coords[i];
+                        FieldBusyOrFreeCellMap[deck.y][deck.x] = marker.FREE;
+                    }
+                }
+            }
+            shipObjects = newShipObjectsList
         }
-        function f(e, t, n, i, r, o, s) {
-            i = "h" == i ? "h" : "v";
-            var a, l, c = e, u = t, f = 0;
-            s = s || j;
-            for (var d = {
+
+        function isCellCorrect(dataY, dataX, dataLength, dataPosition, r, o, checkAroundCells) {
+            dataPosition = "h" == dataPosition ? "h" : "v";
+            var row, col, cellY = dataY, cellX = dataX, countOfCorrectCells = 0;
+            checkAroundCells = checkAroundCells || checkCellsAround;
+            var newShipObject = {
                 id: o || ze(),
-                state: wt.HIDDEN,
-                y: e,
-                x: t,
-                len: n,
-                pos: i,
+                state: shipStatus.HIDDEN,
+                y: dataY,
+                x: dataX,
+                len: dataLength,
+                pos: dataPosition,
                 coords: []
-            }, p = 0; n > p; p++)
-                "h" == i ? (a = c,
-                l = u + p) : (a = c + p,
-                l = u),
-                r && s(a, l) && f++,
-                r || (At[a][l] = yt.BUSY,
-                d.coords.push({
-                    y: a,
-                    x: l,
-                    state: kt.HIDDEN
-                }));
-            return r ? r ? f === n : void 0 : (Pt.push(d),
-            d.id)
+            };
+            for (var p = 0; p < dataLength; p++) {
+                if (dataPosition == "h") {
+                    row = cellY;
+                    col = cellX + p;
+                } else {
+                    row = cellY + p;
+                    col = cellX;
+                }
+                if (r) {
+                    checkAroundCells(row, col) && countOfCorrectCells++;
+                } else {
+                    FieldBusyOrFreeCellMap[row][col] = marker.BUSY;
+                    newShipObject.coords.push({
+                        y: row,
+                        x: col,
+                        state: kt.HIDDEN
+                    });
+                }
+            }
+            if (r) {
+                return countOfCorrectCells === dataLength;
+            }
+            shipObjects.push(newShipObject);
+            return newShipObject.id;
+            // return r ? r ? f === dataLength : void 0 : (shipObjects.push(newShipObject), newShipObject.id)
         }
         function k(e) {
             e = parseInt(e, 10);
-            var t = Re(0, vt.height - 1)
-              , n = Re(0, vt.width - 1)
+            var t = Re(0, battleFieldSize.height - 1)
+              , n = Re(0, battleFieldSize.width - 1)
               , i = 0 === Re(0, 1) ? "h" : "v";
-            f(t, n, e, i, !0) ? (f(t, n, e, i),
+            isCellCorrect(t, n, e, i, !0) ? (isCellCorrect(t, n, e, i),
             T()) : k(e)
         }
         function T() {
@@ -5720,33 +5760,36 @@ var sprintf = function(e) {
                     s = l.length,
                     a = "h",
                     s > 1 && l[0].x === l[1].x && (a = "v"),
-                    f(r, o, s, a)
+                    isCellCorrect(r, o, s, a)
             } else
                 N()
         }
-        function S(e, t) {
-            return !!At[e][t] == yt.BUSY
+        function isCellFreeCore(row, col) {
+            return !!FieldBusyOrFreeCellMap[row][col] == marker.BUSY
         }
-        function D(e, t) {
-            return P(e, t) && !S(e, t)
+        function isCellFree(row, col) {
+            return areIndexesWithinThePermissibleRange(row, col) && !isCellFreeCore(row, col)
         }
-        function P(e, t) {
-            return e >= 0 && e < vt.height && t >= 0 && t < vt.width ? !0 : !1
+        function areIndexesWithinThePermissibleRange(row, col) {
+            return row >= 0 && row < battleFieldSize.height && col >= 0 && col < battleFieldSize.width ? !0 : !1
         }
-        function A(e, t) {
-            var n, i;
-            for (var r in Tt)
-                if (n = e + Tt[r][0],
-                i = t + Tt[r][1],
-                P(n, i) && S(n, i))
-                    return !0;
-            return !1
+        function areCellAroundFree(row, col) {
+            for (var r in Tt) {
+                var n = row + Tt[r][0];
+                var i = col + Tt[r][1];
+                if (areIndexesWithinThePermissibleRange(n, i) && isCellFreeCore(n, i)) {
+                    return true;
+                }
+            }
+            return false;
         }
-        function L(e, t) {
-            return !A(e, t)
+        function cellsAroundAreNotFree(row, col) {
+            return !areCellAroundFree(row, col)
         }
-        function j(e, t) {
-            return P(e, t) && D(e, t) && L(e, t)
+        function checkCellsAround(row, col) {
+            return areIndexesWithinThePermissibleRange(row, col)
+                && isCellFree(row, col)
+                && cellsAroundAreNotFree(row, col);
         }
         function H(e, t) {
             for (var n, i, r, o = 0; o < e.length; o++) {
@@ -5836,11 +5879,10 @@ var sprintf = function(e) {
             o / r.len === r.y ? r.pos = "h" : r.pos = "v",
             r
         }
-        function R(e, t) {
-            for (var n = null , i = 0; i < e.length && (n = e[i],
-            n.id !== t); i++)
-                ;
-            return n
+        function findShipInShipObjectsById(shipObjects, shipId) {
+            var shipObject = null;
+            for (var i = 0; i < shipObjects.length && (shipObject = shipObjects[i], shipObject.id !== shipId); i++);
+            return shipObject
         }
         function z(e, t) {
             for (var n in e)
@@ -5852,22 +5894,33 @@ var sprintf = function(e) {
             X(e, t)
         }
         function $(e) {
-            var t = R(Pt, e);
+            var t = findShipInShipObjectsById(shipObjects, e);
             t && X(t, gt)
         }
-        function U(e) {
-            var t = R(Pt, e);
-            t && Y(t, gt)
+
+        /**
+         * Используя ID определяет установлен ли корабыль на боле.
+         * Если установлен то освобождает клетки на которыех он установлен
+         * путем перемены классов с busy на empty */
+        function findShipByIdAndChangeFromBusyToEmptyForTdsUnderShip(shipId) {
+            var shipObject = findShipInShipObjectsById(shipObjects, shipId);
+            if (shipObject) {
+                changeFromBusyToEmptyForTdsUnderShip(shipObject, gt);
+            }
         }
         function X(e, t) {
             for (var n, i = e.coords, r = 0; r < i.length; r++)
                 n = i[r],
                 t.find("tr:nth-child(" + (n.y + 1) + ") td:nth-child(" + (n.x + 1) + ")").removeClass("battlefield-cell__empty").addClass("battlefield-cell__busy")
         }
-        function Y(e, t) {
-            for (var n, i = e.coords, r = 0; r < i.length; r++)
-                n = i[r],
-                t.find("tr:nth-child(" + (n.y + 1) + ") td:nth-child(" + (n.x + 1) + ")").removeClass("battlefield-cell__busy").addClass("battlefield-cell__empty")
+        function changeFromBusyToEmptyForTdsUnderShip(shipObject, battleField) {
+            var deckCoords = shipObject.coords;
+            for (var i = 0; i < i.length; i++) {
+                var deck = deckCoords[i];
+                var cell = battleField.find("tr:nth-child(" + (deck.y + 1) + ") td:nth-child(" + (deck.x + 1) + ")");
+                cell.removeClass("battlefield-cell__busy");
+                cell.addClass("battlefield-cell__empty");
+            }
         }
         function G() {
             var lines = i(".port-lines");
@@ -5892,7 +5945,7 @@ var sprintf = function(e) {
             };
             "h" == position && (r = size, length = 1, s.right = size - 1, s.bottom = 0);
             var a = 2;
-            return i('<div data-id="' + id + '" data-length="' + size + '" data-position="' + position + '" class="ship-box ship-box__' + position + '" style="width: ' + r * a + "em; height: " + length * a + "em; padding-right: " + s.right + "px; padding-bottom: " + s.bottom + 'px;" />')
+            return $('<div data-id="' + id + '" data-length="' + size + '" data-position="' + position + '" class="ship-box ship-box__' + position + '" style="width: ' + r * a + "em; height: " + length * a + "em; padding-right: " + s.right + "px; padding-bottom: " + s.bottom + 'px;" />')
         }
         function V(e, t, n, i, r, o) {
             var s = J(n, i, o);
@@ -5931,7 +5984,7 @@ var sprintf = function(e) {
             return t.substr(Ze.length)
         }
         function ee() {
-            var e = i(this)
+            var e = $(this)
               , t = e.attr("data-x")
               , n = e.attr("data-y");
             mt.hasClass("battlefield__processed") || ie(n, t, e)
@@ -5967,11 +6020,11 @@ var sprintf = function(e) {
             }, !0, i, r)
         }
         function re(e) {
-            var t = i(".chat-state__typing");
+            var t = $(".chat-state__typing");
             e ? t.addClass("chat-state__invisible") : t.removeClass("chat-state__invisible")
         }
         function oe(e) {
-            return e = i.trim(e),
+            return e = $.trim(e),
             "" != e ? (C.reachGoal("chatMessage"),
             st = !1,
             pe({
@@ -5982,17 +6035,17 @@ var sprintf = function(e) {
         }
         function se() {
             ft = !0,
-            i(".body").removeClass("body__game_freeze").addClass("body__game_over")
+            $(".body").removeClass("body__game_freeze").addClass("body__game_over")
         }
         function ae() {
             dt = !0,
-            i(".body").addClass("body__game_freeze")
+            $(".body").addClass("body__game_freeze")
         }
         function le() {
             mt.find(".battlefield-cell-content").bind("click", ee);
-            var e = Q(Pt);
+            var e = Q(shipObjects);
             ce(e),
-            "off" == i.cookie("websocket") && (v = !1);
+            "off" == $.cookie("websocket") && (v = !1);
             var t = s().replace(/^\/[a-z]{2}\//, "/")
               , n = 0 === t.toLowerCase().indexOf("/id") ? t.substr(3) : ""
               , r = function(e) {
@@ -6011,7 +6064,7 @@ var sprintf = function(e) {
             }, !0, r, me)
         }
         function ce(e) {
-            if (e = e || Q(Pt),
+            if (e = e || Q(shipObjects),
             "undefined" != typeof localStorage)
                 try {
                     var t = "ships__" + (bt ? "classic" : "default")
@@ -6023,7 +6076,7 @@ var sprintf = function(e) {
             if ("undefined" != typeof localStorage)
                 try {
                     var e = "ships__" + (bt ? "classic" : "default") + "__archive"
-                      , t = JSON.stringify(Q(Pt, !0))
+                      , t = JSON.stringify(Q(shipObjects, !0))
                       , n = localStorage[e] ? JSON.parse(localStorage[e]) : [];
                     -1 == n.indexOf(t) && n.push(t),
                     localStorage[e] = JSON.stringify(n)
@@ -6060,7 +6113,7 @@ var sprintf = function(e) {
                 };
                 var a = JSON.stringify(t);
                 if (v) {
-                    var l = c()
+                    var l = leftLimit()
                       , u = p;
                     "ws" == l && (u = (h || g) + "." + u);
                     var f = WebSocket.OPEN || 1
@@ -6101,7 +6154,7 @@ var sprintf = function(e) {
                             }),
                             it++,
                             it >= rt && (v = !1,
-                            i.cookie("websocket", "off", {
+                            $.cookie("websocket", "off", {
                                 expires: 1,
                                 path: "/",
                                 domain: "." + p
@@ -6121,7 +6174,7 @@ var sprintf = function(e) {
                     n = "undefined" == typeof n || n ? !0 : !1,
                     $e && 4 != $e.readyState && $e.abort && $e.abort(),
                     clearTimeout(Xe),
-                    $e = i.ajax({
+                    $e = $.ajax({
                         cache: !1,
                         type: "post",
                         dataType: "json",
@@ -6141,7 +6194,7 @@ var sprintf = function(e) {
         function he(e) {
             var t = !1
               , n = r(sprintf(d.whoIsOnline, e.online, e.online), d.lang);
-            if (e.online && i(".online_count").text(n),
+            if (e.online && $(".online_count").text(n),
             e.events) {
                 e.events.sort(function(e, t) {
                     return e.id - t.id
@@ -6214,7 +6267,7 @@ var sprintf = function(e) {
             if ("undefined" == typeof ot[t] && (ot[t] = !1,
             ve(),
             !ft)) {
-                i(".body__game_over").removeClass("body__game_over");
+                $(".body__game_over").removeClass("body__game_over");
                 var n = e.name
                   , r = e.payload
                   , o = !0;
@@ -6225,8 +6278,8 @@ var sprintf = function(e) {
                     dt && (o = !1);
                     break;
                 case "waiting-for-rival":
-                    i(".leave").removeClass("none"),
-                    i(".battlefield-start-hint").removeClass("none"),
+                    $(".leave").removeClass("none"),
+                    $(".battlefield-start-hint").removeClass("none"),
                     gt.addClass("battlefield__wait");
                     break;
                 case "chat-message-typing":
@@ -6243,10 +6296,10 @@ var sprintf = function(e) {
                 case "game-started-move-off":
                 case "game-started-move-on":
                     ke("game_started"),
-                    i(".chat-gap").removeClass("none"),
-                    i(".leave").removeClass("none"),
-                    i(".battlefield-start").addClass("none"),
-                    i(".battlefield-stat").removeClass("none"),
+                    $(".chat-gap").removeClass("none"),
+                    $(".leave").removeClass("none"),
+                    $(".battlefield-start").addClass("none"),
+                    $(".battlefield-stat").removeClass("none"),
                     mt.removeClass("none"),
                     ut = !0,
                     ft = !1,
@@ -6281,8 +6334,8 @@ var sprintf = function(e) {
             }
         }
         function xe(e, t) {
-            var n = i(".notification__" + e);
-            (n.length || t) && (i(".notification").addClass("none"),
+            var n = $(".notification__" + e);
+            (n.length || t) && ($(".notification").addClass("none"),
             n.removeClass("none"),
             De(n.find(".notification-message").text()))
         }
@@ -6316,7 +6369,7 @@ var sprintf = function(e) {
             }
         }
         function we(t) {
-            var n, r = i(".chat-message__holder");
+            var n, r = $(".chat-message__holder");
             if (y)
                 n = new Date(t.date).toLocaleTimeString(navigator.language, {
                     hour12: !1
@@ -6334,9 +6387,9 @@ var sprintf = function(e) {
                 10 > a && (a = "0" + a),
                 n = [a, l, c].join(":")
             }
-            var u = i('<li class="chat-message chat-message__' + t.owner + '"><span class="chat-message-time">' + n + '</span> <span class="chat-message-text">' + Be(t.message) + "</span></li>");
+            var u = $('<li class="chat-message chat-message__' + t.owner + '"><span class="chat-message-time">' + n + '</span> <span class="chat-message-text">' + Be(t.message) + "</span></li>");
             u.insertAfter(r),
-            i(window).trigger("resize")
+            $(window).trigger("resize")
         }
         function Ce() {
             if ("undefined" == typeof Audio)
@@ -6351,7 +6404,7 @@ var sprintf = function(e) {
         function ke(t) {
             if (qe(et.sound))
                 try {
-                    var n, r, o = i(".sound__" + t), s = window.navigator.userAgent;
+                    var n, r, o = $(".sound__" + t), s = window.navigator.userAgent;
                     "game_started" == t || "chat" == t ? n = o : (r = o.clone(),
                     n = r),
                     /(ipad|iphone)/i.test(s) ? o.get(0).play() : n.get(0).play()
@@ -6385,16 +6438,16 @@ var sprintf = function(e) {
             lt = []
         }
         function Ae() {
-            i(window).bind("beforeunload", function(e) {
+            $(window).bind("beforeunload", function(e) {
                 if (Ge && !ft) {
                     if (!pt && !dt)
-                        return i(".leave").attr("data-confirm");
+                        return $(".leave").attr("data-confirm");
                     pe({
                         command: "leave"
                     }, !1)
                 }
             }),
-            i(window).unload(function() {
+            $(window).unload(function() {
                 Ge && (ut ? ft || (pe({
                     command: "leave"
                 }, !1),
@@ -6406,12 +6459,12 @@ var sprintf = function(e) {
             })
         }
         function Le() {
-            i(window).bind("online", function() {
+            $(window).bind("online", function() {
                 C.reachGoal("online"),
-                i(".body").removeClass("body__offline")
+                $(".body").removeClass("body__offline")
             }),
-            i(window).bind("offline", function() {
-                i(".body").addClass("body__offline")
+            $(window).bind("offline", function() {
+                $(".body").addClass("body__offline")
             })
         }
         function je(e, t) {
@@ -6432,17 +6485,17 @@ var sprintf = function(e) {
                 }
                 e.push('<div class="ship-type ship-type__len_' + n.size + '">' + r.join("") + "</div>")
             }
-            i(".battlefield-stat").html('<div class="ship-types">' + e.join("") + "</div>").removeClass("none")
+            $(".battlefield-stat").html('<div class="ship-types">' + e.join("") + "</div>").removeClass("none")
         }
-        function Oe() {
-            var e = i(".battlefield-cell-content").last();
+        function getCellSizeObject() {
+            var e = $(".battlefield-cell-content").last();
             return {
                 height: e.height(),
                 width: e.width()
             }
         }
-        function Ie() {
-            var e = i(this);
+        function turnShip() {
+            var e = $(this);
             if (!e.closest(".port").length) {
                 var t = e.css("height")
                   , n = e.css("width");
@@ -6454,9 +6507,9 @@ var sprintf = function(e) {
                       , l = e.attr("data-position")
                       , c = "v" == l ? "h" : "v"
                       , d = e.attr("data-id");
-                    if (U(d),
-                    u(d),
-                    f(o, s, a, c, !0)) {
+                    if (findShipByIdAndChangeFromBusyToEmptyForTdsUnderShip(d),
+                    deleteObjectsFromShipObjectsListAndMakeFreeNeddedCells(d),
+                    isCellCorrect(o, s, a, c, !0)) {
                         var p = e.css("padding-right")
                           , h = e.css("padding-bottom");
                         e.css({
@@ -6469,15 +6522,15 @@ var sprintf = function(e) {
                         parseInt(t, 10) > parseInt(n, 10) && (g = "h"),
                         e.removeClass("ship-box__h ship-box__v").addClass("ship-box__" + g),
                         e.attr("data-position", g),
-                        f(o, s, a, c, !1, d),
+                        isCellCorrect(o, s, a, c, !1, d),
                         $(d)
                     } else {
-                        f(o, s, a, l, !1, d),
+                        isCellCorrect(o, s, a, l, !1, d),
                         $(d);
                         var m = {
                             duration: 250
                         };
-                        e = i(".ship-box[data-id=" + d + "]"),
+                        e = $(".ship-box[data-id=" + d + "]"),
                         e.addClass("ship-box__placeholder_error"),
                         clearTimeout(Lt),
                         e.stop(!0).shake(m),
@@ -6488,8 +6541,12 @@ var sprintf = function(e) {
                 }
             }
         }
+
+
+
+
         function Me() {
-            var e = i(".ship-box__draggable");
+            var e = $(".ship-box__draggable");
             e.draggable("destroy"),
             e.unbind("click"),
             e.removeClass("ship-box__draggable")
@@ -6503,123 +6560,148 @@ var sprintf = function(e) {
                       , r = e.attr("data-id")
                       , o = parseInt(e.attr("data-length"), 10)
                       , s = e.attr("data-position");
-                    f(n, i, o, s, !1, r),
+                    isCellCorrect(n, i, o, s, !1, r),
                     $(r)
                 }
             }
-            i(".ship-box:not(.ship-box__draggable)").draggable({
+            $(".ship-box:not(.ship-box__draggable)").draggable({
                 create: function(e, t) {
-                    i(this).addClass("ship-box__draggable"),
-                    i(this).bind("click", Ie)
+                    $(this).addClass("ship-box__draggable"),
+                    $(this).bind("click", turnShip)
                 },
                 start: function(e, t) {
-                    var n = t.helper
-                      , i = n.attr("data-id");
-                    U(i),
-                    u(i)
+                    /*
+                     * Освобождает поле от объекта и освобождает карту занятых клеточек
+                     */
+                    var shipElem = t.helper;
+                    var shipId = shipElem.attr("data-id");
+                    findShipByIdAndChangeFromBusyToEmptyForTdsUnderShip(shipId);
+                    deleteObjectsFromShipObjectsListAndMakeFreeNeddedCells(shipId);
                 },
-                stop: function(t, n) {
-                    var r = n.helper;
-                    r.removeClass("ship-box__transparent");
-                    var o = i(".ship-box__placeholder");
-                    o.length ? (o.before(r),
-                    o.remove(),
-                    e(r),
-                    i(".placeships-variant__hands_inactive").removeClass("placeships-variant__hands_inactive"),
-                    setTimeout(function() {
-                        i(".port .ship-box").length || (i(".battlefields").removeClass("battlefields__handly"),
-                        i(".battlefield-start").removeClass("none"))
-                    }, 500)) : e(r),
-                    r.css({
-                        left: 0,
-                        top: 0,
-                        margin: "-2px"
-                    })
+                stop: function(t, originalShipJQ) {
+                    var originalShip = originalShipJQ.helper;
+                    originalShip.removeClass("ship-box__transparent");
+
+                    var placeholder = $(".ship-box__placeholder");
+                    if (placeholder.length) {
+                        placeholder.before(originalShip);
+                        placeholder.remove();
+                        e(originalShip);
+                        $(".placeships-variant__hands_inactive").removeClass("placeships-variant__hands_inactive");
+                        setTimeout(function() {
+                            $(".port .ship-box").length || ($(".battlefields").removeClass("battlefields__handly"),
+                                $(".battlefield-start").removeClass("none"))
+                        }, 500);
+                    } else {
+                        e(originalShip);
+                        originalShip.css({
+                            left: 0,
+                            top: 0,
+                            margin: "-2px"
+                        })
+                    }
                 },
-                drag: function(e, t) {
-                    var r = i(this)
-                      , o = r.clone(!1);
-                    o.removeClass("ui-draggable ui-draggable-dragging ship-box__transparent").addClass("ship-box__placeholder").css({
-                        left: 0,
-                        top: 0,
-                        margin: "-2px"
-                    });
-                    var s = i(".battlefield__self .battlefield-cell-content");
-                    s.find(".ship-box__placeholder").remove();
-                    var a = Oe()
-                      , l = t.offset.top + a.height / 2
-                      , c = t.offset.left + a.width / 2;
-                    r.removeClass("ship-box__transparent"),
-                    s.each(function() {
-                        var e = i(this)
-                          , t = e.offset()
-                          , s = e.width()
-                          , a = e.height();
-                        if (c >= t.left && c <= t.left + s && l >= t.top && l <= t.top + a) {
-                            var u = parseInt(e.attr("data-y"), 10)
-                              , d = parseInt(e.attr("data-x"), 10)
-                              , p = parseInt(r.attr("data-length"), 10)
-                              , h = r.attr("data-position")
-                              , g = f(u, d, p, h, !0, n);
-                            return g && (e.append(o),
-                            r.addClass("ship-box__transparent")),
-                            !1
+                drag: function(e, originalShip) {
+                    var originalShipJQ = $(this);
+
+                    /* Создали и подготовили клон.
+                     * Клон будет прилипить (он же placeholder)
+                     * Удалили ненужные для клона классы */
+                    var cloneShipElemJS = originalShipJQ.clone(false);
+                    cloneShipElemJS.removeClass("ui-draggable ui-draggable-dragging ship-box__transparent");
+                    cloneShipElemJS.addClass("ship-box__placeholder"); //Делает плейсхолдер зеленым
+                    cloneShipElemJS.css({left: 0, top: 0, margin: "-2px"});
+
+                    /* Удалить зеленую область старого клона(placeholder) */
+                    var cellContent = $(".battlefield__self .battlefield-cell-content");
+                    cellContent.find(".ship-box__placeholder").remove();
+
+                    var cellSize = getCellSizeObject();
+                    var shipTopCenter = originalShip.offset.top + cellSize.height / 2;
+                    var shipLeftCenter = originalShip.offset.left + cellSize.width / 2;
+
+                    originalShipJQ.removeClass("ship-box__transparent");
+
+                    /* Перебор всех клеток на поле по очереди
+                     * определение на какую клетку собирается приземлиться
+                     * корабль и если все клетки для корабля доступны то
+                     * установить в эту клетку клон а оргинальный корабль сделать невидимым. */
+                    cellContent.each(function() {
+                        var cell = $(this);
+                        var cellOffsets = cell.offset();
+                        var cellWidth = cell.width();
+                        var cellHeight = cell.height();
+                        if (shipLeftCenter >= cellOffsets.left && shipLeftCenter <= cellOffsets.left + cellWidth && shipTopCenter >= cellOffsets.top && shipTopCenter <= cellOffsets.top + cellHeight) {
+                            var dataY = parseInt(cell.attr("data-y"), 10);
+                            var dataX = parseInt(cell.attr("data-x"), 10);
+                            var dataLength = parseInt(originalShipJQ.attr("data-length"), 10);
+                            var dataPosition = originalShipJQ.attr("data-position");
+                            if (isCellCorrect(dataY, dataX, dataLength, dataPosition, true, n)) {
+                                cell.append(cloneShipElemJS);
+                                originalShipJQ.addClass("ship-box__transparent");
+                            }
+                            return false;
                         }
                     })
                 }
             })
         }
+
+
+
+
+
         function Fe() {
             function n() {
-                x && i(".body").addClass("body__with-pointerevents")
+                x && $(".body").addClass("body__with-pointerevents")
             }
             function r() {
                 v && (C.reachGoal("supportWebSocket"),
-                "off" == i.cookie("websocket") && C.reachGoal("websocketOff")),
+                "off" == $.cookie("websocket") && C.reachGoal("websocketOff")),
                 b && C.reachGoal("supportVibrate")
             }
             function o() {
                 function e() {
-                    var e = JSON.stringify(Q(Pt, !0))
+                    var e = JSON.stringify(Q(shipObjects, !0))
                       , t = "dock-table__current"
-                      , n = i(".dock-table");
+                      , n = $(".dock-table");
                     n.each(function() {
-                        var n = i(this).attr("data-coords")
+                        var n = $(this).attr("data-coords")
                           , r = n === e;
-                        r ? i(this).addClass(t) : i(this).removeClass(t)
+                        r ? $(this).addClass(t) : $(this).removeClass(t)
                     })
                 }
                 function n() {
                     e(),
-                    i(".dock").removeClass("none"),
-                    i(".placeships-variant__archive").addClass("placeships-variant__archive_inactive");
-                    var t = i(".battlefields");
+                    $(".dock").removeClass("none"),
+                    $(".placeships-variant__archive").addClass("placeships-variant__archive_inactive");
+                    var t = $(".battlefields");
                     t.is(".battlefields__handly") && (t.removeClass("battlefields__handly"),
-                    i(".placeships-variant__hands_inactive").removeClass("placeships-variant__hands_inactive"),
-                    a(),
+                    $(".placeships-variant__hands_inactive").removeClass("placeships-variant__hands_inactive"),
+                    createFieldAndInitializeAdditionalData(),
                     E(),
-                    z(Pt, gt),
-                    i(".battlefield-start").removeClass("none"))
+                    z(shipObjects, gt),
+                    $(".battlefield-start").removeClass("none"))
                 }
                 function r() {
-                    i(".dock").addClass("none"),
-                    i(".placeships-variant__archive").removeClass("placeships-variant__archive_inactive")
+                    $(".dock").addClass("none"),
+                    $(".placeships-variant__archive").removeClass("placeships-variant__archive_inactive")
                 }
                 var o = bt ? "ships__classic__archive" : "ships__default__archive";
                 if ("undefined" != typeof localStorage && "undefined" != typeof localStorage[o] && "" != localStorage[o]) {
                     var s = JSON.parse(localStorage[o]);
                     if (s.length) {
-                        i(".placeships-variant__archive").removeClass("none"),
+                        $(".placeships-variant__archive").removeClass("none"),
                         s.forEach(function(e, t) {
-                            for (var n = JSON.parse(e), r = i('<table class="dock-table" data-coords="' + e + '"></table>'), o = 0; o < vt.height; o++) {
-                                for (var s = i("<tr></tr>"), a = 0; a < vt.width; a++) {
-                                    var l = i('<td class="dock-table-cell"></td>');
+                            for (var n = JSON.parse(e), r = $('<table class="dock-table" data-coords="' + e + '"></table>'), o = 0; o < battleFieldSize.height; o++) {
+                                for (var s = $("<tr></tr>"), a = 0; a < battleFieldSize.width; a++) {
+                                    var l = $('<td class="dock-table-cell"></td>');
                                     0 === o && 0 === a && l.html('<span class="dock-table-cell-position-gap"><span class="dock-table-cell-position">' + (t + 1) + ")</span></span>"),
                                     s.append(l)
                                 }
                                 r.append(s)
                             }
-                            i(".dock-sets").append(r),
+                            $(".dock-sets").append(r),
                             n.forEach(function(e) {
                                 e.forEach(function(e) {
                                     var t = r.find("tr:nth-child(" + (e[0] + 1) + ") td:nth-child(" + (e[1] + 1) + ")");
@@ -6627,16 +6709,16 @@ var sprintf = function(e) {
                                 })
                             })
                         }),
-                        i(".placeships-variant__archive .placeships-variant-link").on("click", function() {
+                        $(".placeships-variant__archive .placeships-variant-link").on("click", function() {
                             n()
                         });
                         var l = function(e) {
-                            (i(e.target).is(".dock-closer") || !i(e.target).closest(".dock").length && !i(e.target).closest(".placeships-variant__archive").length) && r()
+                            ($(e.target).is(".dock-closer") || !$(e.target).closest(".dock").length && !$(e.target).closest(".placeships-variant__archive").length) && r()
                         }
                         ;
-                        i(document).on("click", l),
-                        i(".dock-table").on("click", function() {
-                            var e = JSON.parse(i(this).attr("data-coords"));
+                        $(document).on("click", l),
+                        $(".dock-table").on("click", function() {
+                            var e = JSON.parse($(this).attr("data-coords"));
                             e.forEach(function(e, t) {
                                 e.forEach(function(t, n) {
                                     e[n] = {
@@ -6645,9 +6727,9 @@ var sprintf = function(e) {
                                     }
                                 })
                             }),
-                            a(),
+                            createFieldAndInitializeAdditionalData(),
                             E(e),
-                            z(Pt, gt),
+                            z(shipObjects, gt),
                             We(),
                             r(),
                             C.reachGoal("chooseShipsFromArchive")
@@ -6656,7 +6738,7 @@ var sprintf = function(e) {
                 }
             }
             function c() {
-                2 == g.length && i.cookie("lang", g, {
+                2 == g.length && $.cookie("lang", g, {
                     expires: 365,
                     path: "/",
                     domain: "." + p
@@ -6673,7 +6755,7 @@ var sprintf = function(e) {
                     "undefined" == typeof e && null == event.toElement && (at = !1)
                 }
                 ,
-                i(window).focus(function() {
+                $(window).focus(function() {
                     at = !0,
                     Pe()
                 }).blur(function() {
@@ -6681,9 +6763,9 @@ var sprintf = function(e) {
                 })
             }
             function f() {
-                var e = i(".chat-teletype");
+                var e = $(".chat-teletype");
                 e.bind("keydown", function(e) {
-                    13 == e.keyCode ? oe(i(this).val()) && i(this).val("") : st || (st = !0,
+                    13 == e.keyCode ? oe($(this).val()) && $(this).val("") : st || (st = !0,
                     pe({
                         command: "chat-message-typing"
                     }, !0, he, me))
@@ -6703,52 +6785,52 @@ var sprintf = function(e) {
             }
             function d() {
                 function e(e) {
-                    a(),
+                    createFieldAndInitializeAdditionalData(),
                     e ? N() : E(),
-                    z(Pt, gt),
+                    z(shipObjects, gt),
                     We(),
-                    i(".battlefields").removeClass("battlefields__handly"),
-                    i(".battlefield-start").removeClass("none")
+                    $(".battlefields").removeClass("battlefields__handly"),
+                    $(".battlefield-start").removeClass("none")
                 }
                 function t() {
-                    a(),
-                    i(".battlefields").addClass("battlefields__handly"),
-                    i(".battlefield-start").addClass("none"),
+                    createFieldAndInitializeAdditionalData(),
+                    $(".battlefields").addClass("battlefields__handly"),
+                    $(".battlefield-start").addClass("none"),
                     G(),
                     We()
                 }
                 function n() {
-                    i(this).off("click", n),
-                    i(this).addClass("battlefield-start-button__disabled"),
-                    i(".placeships").addClass("none"),
+                    $(this).off("click", n),
+                    $(this).addClass("battlefield-start-button__disabled"),
+                    $(".placeships").addClass("none"),
                     Me(),
                     xe("connect-to-server"),
                     r(),
                     le()
                 }
-                i(".placeships-variant__hands").click(function() {
+                $(".placeships-variant__hands").click(function() {
                     t(),
-                    i(this).addClass("placeships-variant__hands_inactive")
+                    $(this).addClass("placeships-variant__hands_inactive")
                 }),
-                i(".placeships-variant__randomly").click(function() {
+                $(".placeships-variant__randomly").click(function() {
                     e(!0),
-                    i(".placeships-variant__hands_inactive").removeClass("placeships-variant__hands_inactive")
+                    $(".placeships-variant__hands_inactive").removeClass("placeships-variant__hands_inactive")
                 }),
                 e(),
-                i(".battlefield-start-button").on("click", n)
+                $(".battlefield-start-button").on("click", n)
             }
             function m() {
                 function t() {
-                    qe(et.compactchat) && (i(".chat-gap").addClass("chat-gap__compact"),
-                    i(window).trigger("resize"))
+                    qe(et.compactchat) && ($(".chat-gap").addClass("chat-gap__compact"),
+                    $(window).trigger("resize"))
                 }
                 function n() {
                     var e = Ce();
-                    e && i(".setting__sound").removeClass("none")
+                    e && $(".setting__sound").removeClass("none")
                 }
                 function r() {
                     if ("Notification"in window) {
-                        var t = i(".setting__notifications");
+                        var t = $(".setting__notifications");
                         t.removeClass("none"),
                         Ee() && (t.find(".setting-input").prop("disabled", !0),
                         t.attr("title", t.attr("data-title-blocked"))),
@@ -6756,18 +6838,18 @@ var sprintf = function(e) {
                         t.find(".setting-input").prop("checked", !1))
                     }
                 }
-                i(".setting").each(function() {
-                    var t = i(this).attr("data-name")
+                $(".setting").each(function() {
+                    var t = $(this).attr("data-name")
                       , n = "setting__" + t
                       , r = !1
-                      , o = i("#" + n);
-                    i.cookie(n) && o.attr("checked", "on" == i.cookie(n)),
+                      , o = $("#" + n);
+                    $.cookie(n) && o.attr("checked", "on" == $.cookie(n)),
                     o.click(function() {
-                        et[t] = i(this).is(":checked") ? "on" : "off";
+                        et[t] = $(this).is(":checked") ? "on" : "off";
                         var o = "." + p;
-                        "notifications" == t && ("https" == l() ? (o = p,
+                        "notifications" == t && ("https" == topLimit() ? (o = p,
                         r = !0) : o = h + "." + p),
-                        i.cookie(n, et[t], {
+                        $.cookie(n, et[t], {
                             expires: 365,
                             path: "/",
                             domain: o,
@@ -6775,8 +6857,8 @@ var sprintf = function(e) {
                         }),
                         "sound" == t && "on" == et[t] && ke("click"),
                         "notifications" == t && "on" == et[t] && Te(),
-                        "compactchat" == t && ("on" == et[t] ? i(".chat-gap").addClass("chat-gap__compact") : i(".chat-gap").removeClass("chat-gap__compact"),
-                        i(window).trigger("resize"))
+                        "compactchat" == t && ("on" == et[t] ? $(".chat-gap").addClass("chat-gap__compact") : $(".chat-gap").removeClass("chat-gap__compact"),
+                        $(window).trigger("resize"))
                     }),
                     et[t] = o.is(":checked")
                 }),
@@ -6786,14 +6868,14 @@ var sprintf = function(e) {
             }
             function y() {
                 function e() {
-                    i(".battlefield-start-choose_rival-variant").removeClass("battlefield-start-choose_rival-variant__active"),
-                    i(".battlefield-start-choose_rival-variant-link").each(function() {
-                        if (i(this).attr("href") == s() && (i(this).closest(".battlefield-start-choose_rival-variant").addClass("battlefield-start-choose_rival-variant__active"),
-                        i(this).is(".battlefield-start-choose_rival-variant-link__connect"))) {
-                            var e = i(this).closest(".battlefield-start-choose_rival-variant").find(".battlefield-start-choose_rival-variant-url-input");
+                    $(".battlefield-start-choose_rival-variant").removeClass("battlefield-start-choose_rival-variant__active"),
+                    $(".battlefield-start-choose_rival-variant-link").each(function() {
+                        if ($(this).attr("href") == s() && ($(this).closest(".battlefield-start-choose_rival-variant").addClass("battlefield-start-choose_rival-variant__active"),
+                        $(this).is(".battlefield-start-choose_rival-variant-link__connect"))) {
+                            var e = $(this).closest(".battlefield-start-choose_rival-variant").find(".battlefield-start-choose_rival-variant-url-input");
                             e.val(location.href).attr("data-value", location.href),
                             e.on("click", function() {
-                                i(this).trigger("select")
+                                $(this).trigger("select")
                             }),
                             e.on("keydown keyup", function(e) {
                                 var t = e.ctrlKey || e.metaKey;
@@ -6801,8 +6883,8 @@ var sprintf = function(e) {
                             }),
                             e.on("touchstart", function(e) {
                                 e.preventDefault(),
-                                i(this).trigger("focus"),
-                                i(this).get(0).setSelectionRange(0, 9999)
+                                $(this).trigger("focus"),
+                                $(this).get(0).setSelectionRange(0, 9999)
                             })
                         }
                     })
@@ -6811,33 +6893,33 @@ var sprintf = function(e) {
                     var e = s()
                       , t = e.replace(/^\/[a-z]{2}\//, "/");
                     0 == t.toLowerCase().indexOf("/id") && (e = e.replace(/\/$/, ""),
-                    i(".battlefield-start-ships_types-gap").removeClass("none"),
-                    -1 != e.indexOf("/classic") ? (i(".battlefield-start-ships_type__classic").addClass("battlefield-start-ships_type__active"),
-                    i(".battlefield-start-ships_type-link").attr("href", e),
-                    i(".battlefield-start-ships_type__default .battlefield-start-ships_type-link").attr("href", e.replace(/\/classic\/?/, ""))) : (i(".battlefield-start-ships_type__default").addClass("battlefield-start-ships_type__active"),
-                    i(".battlefield-start-ships_type-link").attr("href", e),
-                    i(".battlefield-start-ships_type__classic .battlefield-start-ships_type-link").attr("href", e + "/classic")))
+                    $(".battlefield-start-ships_types-gap").removeClass("none"),
+                    -1 != e.indexOf("/classic") ? ($(".battlefield-start-ships_type__classic").addClass("battlefield-start-ships_type__active"),
+                    $(".battlefield-start-ships_type-link").attr("href", e),
+                    $(".battlefield-start-ships_type__default .battlefield-start-ships_type-link").attr("href", e.replace(/\/classic\/?/, ""))) : ($(".battlefield-start-ships_type__default").addClass("battlefield-start-ships_type__active"),
+                    $(".battlefield-start-ships_type-link").attr("href", e),
+                    $(".battlefield-start-ships_type__classic .battlefield-start-ships_type-link").attr("href", e + "/classic")))
                 }
                 !function() {
                     var e = "";
-                    "https" == l() && (e = "/" + g);
+                    "https" == topLimit() && (e = "/" + g);
                     var t = s().replace(/^\/[a-z]{2}\//, "/")
-                      , n = i(".battlefield-start-choose_rival-variant-link");
+                      , n = $(".battlefield-start-choose_rival-variant-link");
                     n.attr("href", e + "/");
-                    var r = i(".battlefield-start-choose_rival-variant-link__connect");
+                    var r = $(".battlefield-start-choose_rival-variant-link__connect");
                     0 === t.toLowerCase().indexOf("/id") ? r.attr("href", e + t) : r.attr("href", e + "/id" + Re(1e7, 99999999))
                 }(),
-                i(".battlefield-start-choose_rival-variant-link").click(function() {
+                $(".battlefield-start-choose_rival-variant-link").click(function() {
                     ce()
                 }),
                 e(),
                 t()
             }
             function _() {
-                i(".restart").click(function() {
+                $(".restart").click(function() {
                     location.reload(!0)
                 }),
-                i(".leave-link").attr("href", location.href).on("click", function(e) {
+                $(".leave-link").attr("href", location.href).on("click", function(e) {
                     function t(e) {
                         location.reload(!0)
                     }
@@ -6871,7 +6953,7 @@ var sprintf = function(e) {
             return i
         }
         function Be(e) {
-            return i("<div />").text(e).html()
+            return $("<div />").text(e).html()
         }
         var $e, Ue, Xe, Ye, Ge, Je, Ve, Qe, Ke, Ze = "battleship__", 
             et = {}, 
@@ -6888,14 +6970,14 @@ var sprintf = function(e) {
             ft = !1, 
             dt = !1, 
             pt = !1, 
-            ht = i(".battlefield"), 
+            ht = $(".battlefield"),
             gt = ht.filter(".battlefield__self"), 
             mt = ht.filter(".battlefield__rival"), 
-            vt = {
+            battleFieldSize = {
                 height: 10,
                 width: 10
             }, 
-            yt = {
+            marker = {
                 FREE: 0,
                 BUSY: 1
             }, 
@@ -6934,7 +7016,7 @@ var sprintf = function(e) {
                 count: 1
             }]);
         var _t = []
-          , wt = {
+          , shipStatus = {
             HIDDEN: -1,
             WOUNDED: 0,
             KILLED: 1
@@ -6955,97 +7037,97 @@ var sprintf = function(e) {
           , Et = d.letters.split(",")
           , St = []
           , Dt = []
-          , Pt = []
-          , At = []
+          , shipObjects = []
+          , FieldBusyOrFreeCellMap = []
           , Lt = 0;
         Fe(),
         function() {
             function t() {
                 r.removeClass("sda__fixed");
                 var t = r.offset().top + s + a;
-                i(window).height() > t && r.addClass("sda__fixed"),
-                n || (i(".sda__vh").removeClass("sda__vh"),
+                $(window).height() > t && r.addClass("sda__fixed"),
+                n || ($(".sda__vh").removeClass("sda__vh"),
                 n = !0)
             }
             try {
                 var n = !1
-                  , r = i(".sda");
+                  , r = $(".sda");
                 if (!r.length)
                     return;
                 var o = r.find(".sda-block")
                   , s = r.height()
                   , a = parseInt(o.css("padding-top"), 10);
-                i(window).resize(t),
+                $(window).resize(t),
                 t()
             } catch (l) {}
         }(),
         function() {
             function n(e) {
-                var r = i(".sound:not([data-inited])").first();
+                var r = $(".sound:not([data-inited])").first();
                 r.length ? (r.on("canplay", function() {
-                    i(this).attr("data-inited", "yes")
+                    $(this).attr("data-inited", "yes")
                 }),
                 r.get(0).play(),
-                r.get(0).pause()) : i(document).off("touchstart", n)
+                r.get(0).pause()) : $(document).off("touchstart", n)
             }
             var r = window.navigator.userAgent;
-            /(ipad|iphone)/i.test(r) && i(document).on("touchstart", n)
+            /(ipad|iphone)/i.test(r) && $(document).on("touchstart", n)
         }(),
         function() {
-            _ && i(".copyright-link__chrome").removeClass("none")
+            _ && $(".copyright-link__chrome").removeClass("none")
         }(),
         function() {
-            w && (i(".copyright-link__marketplace").removeClass("none"),
-            -1 != window.location.search.indexOf("from=fmp") && i.cookie("fmp", "1", {
+            w && ($(".copyright-link__marketplace").removeClass("none"),
+            -1 != window.location.search.indexOf("from=fmp") && $.cookie("fmp", "1", {
                 expires: 3650,
                 path: "/",
                 domain: "." + p
             }),
-            "undefined" != typeof i.cookie("fmp") && i(".body").addClass("body__fmp"))
+            "undefined" != typeof $.cookie("fmp") && $(".body").addClass("body__fmp"))
         }(),
         function() {
-            "https:" == window.location.protocol && i(".body").addClass("body__ssl")
+            "https:" == window.location.protocol && $(".body").addClass("body__ssl")
         }(),
         function() {
-            -1 != window.location.href.indexOf("vk.com") && i(".body").addClass("body__vk")
+            -1 != window.location.href.indexOf("vk.com") && $(".body").addClass("body__vk")
         }(),
         function() {
-            i(".body-iframe a[href^='mailto:']").on("click", function() {
-                return window.top.location = i(this).attr("href"),
+            $(".body-iframe a[href^='mailto:']").on("click", function() {
+                return window.top.location = $(this).attr("href"),
                 !1
             })
         }(),
         function() {
             function e() {
-                var e = i("." + o);
+                var e = $("." + o);
                 e.length && (e.removeClass(o).attr("style", ""),
                 r.removeClass(s))
             }
             function n() {
-                var e = i(".langs");
+                var e = $(".langs");
                 e.is("." + o) || (e.addClass(o),
                 r.addClass(s))
             }
-            var r = i(".body")
+            var r = $(".body")
               , o = "langs__opened"
               , s = "body__with-" + o;
-            i(".lang__selected .lang-link").on("click", function(t) {
-                var r = i(t.target);
+            $(".lang__selected .lang-link").on("click", function(t) {
+                var r = $(t.target);
                 t.preventDefault(),
                 r.closest("." + o).length ? e() : n()
             });
-            var a = (i("html").attr("data-accept-language") || "").split(",");
+            var a = ($("html").attr("data-accept-language") || "").split(",");
             if (a.length && a[0].length)
                 for (var l = 0; l < a.length; l++) {
                     var c = a[l]
-                      , u = i(".lang__" + c);
+                      , u = $(".lang__" + c);
                     u.length && u.addClass("lang__priority")
                 }
-            i(document).click(function(t) {
-                var n = i(t.target);
+            $(document).click(function(t) {
+                var n = $(t.target);
                 n.closest(".langs").length || e()
             }),
-            i(document).keyup(function(t) {
+            $(document).keyup(function(t) {
                 27 == t.keyCode && e()
             })
         }(),
@@ -7057,39 +7139,39 @@ var sprintf = function(e) {
             function t(t) {
                 var n = 3650;
                 if ("cancel" == t) {
-                    var r = e(i.cookie("review-cancel-count")) + 1;
-                    i.cookie("review-cancel-count", r, {
+                    var r = e($.cookie("review-cancel-count")) + 1;
+                    $.cookie("review-cancel-count", r, {
                         expires: 3650,
                         path: "/",
                         domain: "." + p
                     }),
                     n = 30 * r
                 }
-                i.cookie("review", t, {
+                $.cookie("review", t, {
                     expires: n,
                     path: "/",
                     domain: "." + p
                 })
             }
             function n() {
-                return "undefined" != typeof i.cookie("review")
+                return "undefined" != typeof $.cookie("review")
             }
             function r() {
-                return e(i.cookie("visit")) > 50
+                return e($.cookie("visit")) > 50
             }
-            var o = e(i.cookie("visit"));
-            if (i.cookie("visit", o + 1, {
+            var o = e($.cookie("visit"));
+            if ($.cookie("visit", o + 1, {
                 expires: 3650,
                 path: "/",
                 domain: "." + p
             }),
-            (_ || w) && r() && !n() && !i(".body-iframe").length && "undefined" == typeof i.cookie("fmp")) {
-                var s = i(".body")
-                  , a = i(".notification__init")
-                  , l = i(_ ? ".notification__cws" : ".notification__fmp");
+            (_ || w) && r() && !n() && !$(".body-iframe").length && "undefined" == typeof $.cookie("fmp")) {
+                var s = $(".body")
+                  , a = $(".notification__init")
+                  , l = $(_ ? ".notification__cws" : ".notification__fmp");
                 l.find(".notification-submit__accept").on("click", function() {
                     t("accept"),
-                    location.href = i(this).attr("data-target")
+                    location.href = $(this).attr("data-target")
                 }),
                 l.find(".notification-submit__cancel").on("click", function() {
                     t("cancel"),
@@ -7100,7 +7182,7 @@ var sprintf = function(e) {
                 s.addClass("body__game_over"),
                 a.addClass("none"),
                 l.removeClass("none"),
-                i(".body-sda").addClass("none");
+                $(".body-sda").addClass("none");
             }
         }(),
         function() {
