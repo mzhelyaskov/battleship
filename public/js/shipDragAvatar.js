@@ -45,3 +45,9 @@ ShipDragAvatar.prototype.onDragCancel = function() {
 ShipDragAvatar.prototype.onDragEnd = function() {
     // this._destroy();
 };
+
+ShipDragAvatar.prototype.removePlaceholderFromDisplay = function() {
+    if (this.placeholder.parentNode) {
+        this.placeholder.parentNode.removeChild(this.placeholder);
+    }
+};

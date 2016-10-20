@@ -28,26 +28,25 @@ for (var row = 0; row < fieldSize.height; row++) {
 var placeholder = document.getElementById("battlefield-placeholder");
 placeholder.innerHTML = '<table id="battlefield-table">' + rows.join("") + "</table>";
 
-function createShip(size, position, id) {
+function createShip(shipSize, position, id) {
     id = id || "";
     var width = 1;
-    var length = size;
-    var s = {right: 0, bottom: size - 1};
+    var length = shipSize;
+    var correction = {right: 0, bottom: shipSize - 1};
     if ("h" == position) {
-        width = size; length = 1; s.right = size - 1; s.bottom = 0;
+        width = shipSize; length = 1; correction.right = shipSize - 1; correction.bottom = 0;
     }
     var scale = 2;
-    var ship = {
+    return {
         id: id,
-        size: size,
+        size: shipSize,
         position: position,
         className: 'ship draggable',
         width: width * scale,
         height: length * scale,
-        paddingRight: s.right,
-        paddingBottom: s.bottom
+        paddingRight: correction.right,
+        paddingBottom: correction.bottom
     };
-    return ship;
 }
 
 var collocations = [{
@@ -82,8 +81,8 @@ function collocateShips() {
 
 collocateShips();
 
-new PortDragZone(document.getElementById('port'));
-new BattleFieldDropTarget(document.getElementById('battlefield-table'));
+new PortDragZone(document.querySelector(".container"));
+new ShipDropTarget(document.getElementById('battlefield-table'));
 
 
 

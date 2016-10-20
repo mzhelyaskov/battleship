@@ -29,20 +29,13 @@ var dragManager = new function() {
                 return;
             }
         }
-        // Отобразить перенос объекта, перевычислить текущий элемент под курсором
-        // * При каждом движении мыши перемещает avatar._elem
-        // * и записывает текущий элемент под avatar._elem в avatar._elementUnderAvatar
         avatar.onDragMove(e);
         var newDropTarget = findDropTarget(e);
         if (newDropTarget != dropTarget) {
-            // уведомить старую и  новую зоны-цели о том, что с них ушли/на них зашли
             dropTarget && dropTarget.onDragLeave(newDropTarget, avatar, e);
             newDropTarget && newDropTarget.onDragEnter(dropTarget, avatar, e);
         }
         dropTarget = newDropTarget;
-        // Метод вызывается при каждом движении аватара
-        // Предполагается что в этом месте будет провизводиться
-        // поиск ячеек на который может упасть элемент.
         dropTarget && dropTarget.onDragMove(avatar, e);
         return false;
     }

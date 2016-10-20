@@ -1,18 +1,18 @@
-function BattleFieldDropTarget(elem) {
+function ShipDropTarget(elem) {
     DropTarget.apply(this, arguments);
 }
 
-extend(BattleFieldDropTarget, DropTarget);
+extend(ShipDropTarget, DropTarget);
 
-BattleFieldDropTarget.prototype._showHoverIndication = function() {
+ShipDropTarget.prototype._showHoverIndication = function() {
     // this._targetElem && this._targetElem.classList.add('hover');
 };
 
-BattleFieldDropTarget.prototype._hideHoverIndication = function() {
+ShipDropTarget.prototype._hideHoverIndication = function() {
     // this._targetElem && this._targetElem.classList.remove('hover');
 };
 
-BattleFieldDropTarget.prototype._getTargetElem = function(avatar, event) {
+ShipDropTarget.prototype._getTargetElem = function(avatar, event) {
     // var target = avatar.getTargetElem();
     // if (target.tagName != 'TABLE') {
     //     return;
@@ -27,17 +27,20 @@ BattleFieldDropTarget.prototype._getTargetElem = function(avatar, event) {
     // return target;
 };
 
-BattleFieldDropTarget.prototype.onDragEnd = function(avatar, event) {
+ShipDropTarget.prototype.onDragLeave = function(newDropTarget, avatar, e) {
+    avatar.removePlaceholderFromDisplay();
+};
+
+ShipDropTarget.prototype.onDragEnd = function(avatar, event) {
     avatar.placeholder.parentNode.insertBefore(avatar._elem, avatar.placeholder.nextSibling);
     avatar._elem.style.position = avatar.placeholder.style.position;
     avatar._elem.style.left = avatar.placeholder.style.left;
     avatar._elem.style.top = avatar.placeholder.style.top;
     avatar.placeholder.parentNode.removeChild(avatar.placeholder);
     addShipToMap(avatar);
+    
+    
     // avatar.placeholder = null;
-    
-
-    
     // if (!this._targetElem) {
     //     // перенос закончился вне подходящей точки приземления
     //     avatar.onDragCancel();
@@ -69,12 +72,10 @@ BattleFieldDropTarget.prototype.onDragEnd = function(avatar, event) {
     // this._targetElem = null;
 };
 
-BattleFieldDropTarget.prototype.onDragMove = function (avatar, event) {
+ShipDropTarget.prototype.onDragMove = function (avatar, event) {
     var shipElem = avatar._elem;
     var shipCenter = getShipCoordCenter(shipElem);
-    if (avatar.placeholder.parentNode) {
-        avatar.placeholder.parentNode.removeChild(avatar.placeholder);
-    }
+    avatar.removePlaceholderFromDisplay();
     // shipElem.removeClass("ship-box__transparent");
     var battleFieldCells = this._elem.querySelectorAll(".battlefield-cell");
     battleFieldCells.forEach(function(cell) {

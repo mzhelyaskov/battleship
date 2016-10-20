@@ -65,7 +65,7 @@ DragAvatar.prototype.onDragMove = function(event) {
     shipElem.style.left = event.pageX - this._shiftX + 'px';
     shipElem.style.top = event.pageY - this._shiftY + 'px';
     var shipCenter = getShipCoordCenter(shipElem);
-    this._elementUnderAvatar = getElementUnderClientXY(this._elem, shipCenter.X, shipCenter.Y);
+    this._elementUnderAvatar = getElementUnderClientXY(this._elem, event.clientX, event.clientY);
 
     var point = document.getElementById("point");
     point.style.left = shipCenter.X + 'px';

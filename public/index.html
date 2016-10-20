@@ -5,7 +5,6 @@
     <title>ButleShip</title>
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet" />
     <link href="bootstrap/css/bootstrap-theme.css" rel="stylesheet" />
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href="css/style.css" rel="stylesheet" />
     <script src="js/handlebars.js"></script>
     <script src="js/dragAndDropUtils/lib.js"></script>
@@ -33,9 +32,7 @@
 
     <script id="battlefield-cell-template" type="text/x-handlebars-template">
         <td class="battlefield-cell battlefield-cell-empty" data-y="{{row}}" data-x="{{col}}">
-            <div class="battlefield-cell-content">
-                {{{ cellLabel }}}
-            </div>
+            <div class="battlefield-cell-content">{{{cellLabel}}}</div>
         </td>
     </script>
     <script id="port-line" type="text/x-handlebars-template">

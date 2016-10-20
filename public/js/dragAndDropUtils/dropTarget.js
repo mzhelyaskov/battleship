@@ -57,7 +57,7 @@ DropTarget.prototype.onDragMove = function(avatar, event) {
  *  обнулить this._targetElem
  */
 DropTarget.prototype.onDragEnd = function(avatar, event) {
-    this._targetElem = null;
+    /* override */
 };
 
 /**
