@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ButleShip</title>
-    <link href="/public/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
-    <link href="/public/bower_components/bootstrap/dist/css/bootstrap-theme.css" rel="stylesheet" />
-    <link href="/public/css/style.css" rel="stylesheet" />
-    <!--<script src="/public/js/handlebars.js"></script>-->
-    <!--<script src="/public/js/dragAndDropUtils/lib.js"></script>-->
-    <!--<script src="/public/js/dragAndDropUtils/dragManager.js"></script>-->
-    <!--<script src="/public/js/dragAndDropUtils/dragAvatar.js"></script>-->
-    <!--<script src="/public/js/dragAndDropUtils/dragZone.js"></script>-->
-    <!--<script src="/public/js/dragAndDropUtils/dropTarget.js"></script>-->
-    <!--<script src="/public/js/shipDragAvatar.js"></script>-->
-    <!--<script src="/public/js/portDragZone.js"></script>-->
-    <!--<script src="/public/js/shipDropTarget.js"></script>-->
+    <title>BattleShip</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link href="bower_components/bootstrap/dist/css/bootstrap-theme.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    <script src="js/handlebars.js"></script>
+    <script src="js/dragAndDropUtils/lib.js"></script>
+    <script src="js/dragAndDropUtils/dragManager.js"></script>
+    <script src="js/dragAndDropUtils/dragAvatar.js"></script>
+    <script src="js/dragAndDropUtils/dragZone.js"></script>
+    <script src="js/dragAndDropUtils/dropTarget.js"></script>
+    <script src="js/shipDragAvatar.js"></script>
+    <script src="js/portDragZone.js"></script>
+    <script src="js/shipDropTarget.js"></script>
 </head>
 <body class="body">
     <div class="container">
@@ -23,25 +23,25 @@
     <div id="point"></div>
 
     <script id="battlefield-cell-template" type="text/x-handlebars-template">
-        <!--<td class="battlefield-cell battlefield-cell-empty" data-y="{{row}}" data-x="{{col}}">-->
-            <!--<div class="battlefield-cell-content">{{{cellLabel}}}</div>-->
-        <!--</td>-->
+        <td class="battlefield-cell battlefield-cell-empty" data-y="{{row}}" data-x="{{col}}">
+            <div class="battlefield-cell-content">{{{cellLabel}}}</div>
+        </td>
     </script>
     <script id="port-line" type="text/x-handlebars-template">
         <div class="row">
             <div class="col-md-12">
-                <!--{{#each ships}}-->
-                <!--<div class="port-ship"-->
-                     <!--style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;">-->
-                    <!--<div data-id="{{id}}" data-length="{{size}}" data-position="{{position}}" class="{{className}}"-->
-                         <!--style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;"></div>-->
-                <!--</div>-->
-                <!--{{/each}}-->
+                {{#each ships}}
+                <div class="port-ship"
+                     style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;">
+                    <div data-id="{{id}}" data-length="{{size}}" data-position="{{position}}" class="{{className}}"
+                         style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;"></div>
+                </div>
+                {{/each}}
             </div>
         </div>
     </script>
-    <script src="/public/bower_components/jquery/dist/jquery.js"></script>
-    <script src="/public/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="/public/js/script.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
