@@ -22,7 +22,6 @@ var dragManager = new function() {
             if (Math.abs(e.pageX - downX) < 3 && Math.abs(e.pageY - downY) < 3) {
                 return;
             }
-            // попробовать захватить элемент
             avatar = dragZone.onDragStart(downX, downY, e);
             if (!avatar) { // не получилось, значит перенос продолжать нельзя
                 cleanUp(); // очистить приватные переменные, связанные с переносом

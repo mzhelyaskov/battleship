@@ -32,6 +32,9 @@ ShipDropTarget.prototype.onDragLeave = function(newDropTarget, avatar, e) {
 };
 
 ShipDropTarget.prototype.onDragEnd = function(avatar, event) {
+    if (!avatar.placeholder.parentNode) {
+        return;
+    }
     avatar.placeholder.parentNode.insertBefore(avatar._elem, avatar.placeholder.nextSibling);
     avatar._elem.style.position = avatar.placeholder.style.position;
     avatar._elem.style.left = avatar.placeholder.style.left;

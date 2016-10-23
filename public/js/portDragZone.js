@@ -9,6 +9,6 @@ function PortDragZone(elem) {
  **/
 extend(PortDragZone, DragZone);
 
-PortDragZone.prototype._createAvatar = function() {
+PortDragZone.prototype.createAvatar = function() {
     return new ShipDragAvatar(this, this._elem);
 };

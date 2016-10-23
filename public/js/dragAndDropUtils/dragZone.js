@@ -12,7 +12,7 @@ function DragZone(elem) {
  * Создать аватар, соответствующий зоне.
  * У разных зон могут быть разные типы аватаров
  */
-DragZone.prototype._createAvatar = function() {
+DragZone.prototype.createAvatar = function() {
     /* override */
 };
 
@@ -25,9 +25,11 @@ DragZone.prototype._createAvatar = function() {
  * @return аватар или false, если захватить с данной точки ничего нельзя
  */
 DragZone.prototype.onDragStart = function(downX, downY, event) {
-    var avatar = this._createAvatar();
+    
+    var avatar = this.createAvatar();
     if (!avatar.initFromEvent(downX, downY, event)) {
         return false;
     }
+    
     return avatar;
 };
