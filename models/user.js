@@ -18,17 +18,18 @@ module.exports = {
         db.getConnection(function(err, connection) {
             if (err) {
                 connection.release();
-                throw err;
+                callback(err);
+                return;
             }
             var sql = 'SELECT * FROM user WHERE id = ' + connection.escape(parseInt(userId));
-            connection.query(sql, function(err, user){
+            connection.query(sql, function(err, users){
                 connection.release();
                 if(!err) {
-                    callback(null, {user: user});
+                    callback(null, users[0]);
                 }
             });
             connection.on('error', function(err) {
-                throw err;
+                callback(err);
             });
         });
     },
@@ -37,17 +38,18 @@ module.exports = {
         db.getConnection(function(err, connection) {
             if (err) {
                 connection.release();
-                throw err;
+                callback(err);
+                return;
             }
             var sql = 'SELECT * FROM user';
             connection.query(sql, function(err, users){
                 connection.release();
                 if(!err) {
-                    callback(null, {users: users});
+                    callback(null, users);
                 }
             });
             connection.on('error', function(err) {
-                throw err;
+                callback(err);
             });
         });
     }

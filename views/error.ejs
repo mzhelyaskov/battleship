@@ -1,6 +1,9 @@
-extends layout
+<% layout('layout') -%>
+<% block('title', message) -%>
 
-block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+<h1>Извините произошла ошибка:</h1>
+<h2>
+  <% if (status) { %>(<%= status %>)<% } %> <%= message %>
+</h2>
+<br>
+<pre style="padding-left: 20px"><%= error %></pre>
