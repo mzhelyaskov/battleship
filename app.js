@@ -25,6 +25,7 @@ app.use(cookieParser());
 app.use(require('./middleware/sendHttpError'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// routing
 app.use('/', routes);
 app.use('/', users);
 
