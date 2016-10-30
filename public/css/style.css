@@ -7,8 +7,13 @@ a, abbr, acronym, address, applet, article, aside, audio, b, big, blockquote, bo
 }
 
 .body {
-    font: 1em/1.25 "PT Sans", arial, sans-serif;
+    font: 1em/1.25 'Raleway', 'Open Sans', sans-serif;
     height: 100%
+}
+
+form.md-form {
+    width: 60%;
+    margin: 0 auto;
 }
 
 .navbar {
