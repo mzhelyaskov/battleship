@@ -2,8 +2,8 @@
 <% block('title', message) -%>
 
 <h1>Извините произошла ошибка:</h1>
-<h2>
-  <% if (status) { %>(<%= status %>)<% } %> <%= message %>
-</h2>
+<% if (status) { %>
+    <h2>(<%= status %>) <%= message %></h2>
+<% } %>
 <br>
 <pre style="padding-left: 20px"><%= error %></pre>

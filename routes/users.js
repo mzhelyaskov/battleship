@@ -3,7 +3,6 @@ var router = express.Router();
 var HttpError = require('../error');
 var User = require('../models/user');
 
-/* GET users listing. */
 router.get('/users', function (req, res, next) {
     User.find(function (err, users) {
         if (err) return next(err);
