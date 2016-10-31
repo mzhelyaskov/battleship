@@ -32,6 +32,7 @@ app.use(session({
     saveUninitialized: true
 }));
 app.use(require('./middleware/sendHttpError'));
+app.use(require('./middleware/loadUser'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // routing

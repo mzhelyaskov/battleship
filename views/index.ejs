@@ -1,6 +1,6 @@
 <% layout('layout') -%>
 <% block('title', "BattleShip") -%>
-<% block('fullName', fullName) -%>
+<% block('username', user && user.getFullName()) -%>
 <% script('/js/script.js') -%>
 
 <div class="row">
