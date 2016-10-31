@@ -1,5 +1,7 @@
 var db = require('../lib/mysql');
 var userUtils = require('../lib/userUtils');
+var async = require('async');
+var AuthError = require('../errors/authError');
 
 function User(data) {
     this.id = data.id;
@@ -113,6 +115,30 @@ User.findByName = function(username, callback) {
             callback(err);
         });
     });
+};
+
+User.authorize = function(username, password, callback) {
+    var User = this;
+    async.waterfall([
+        function(callback) {
+            User.findByName(username, callback);
+        },
+        function(user, callback) {
+            if (user) {
+                if (user.checkPassword(password)) {
+                    callback(null, user);
+                } else {
+                    callback(new AuthError("Incorrect Username or Password!"));
+                }
+            } else {
+                var user = new User({username: username, password: password});
+                user.save(function(err) {
+                    if (err) return callback(err);
+                    callback(null, user);
+                });
+            }
+        }
+    ], callback);
 };
 
 module.exports = User;

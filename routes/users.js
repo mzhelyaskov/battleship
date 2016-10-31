@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var HttpError = require('../error');
+var HttpError = require('../errors/httpError');
 var User = require('../models/user');
 
 router.get('/users', function (req, res, next) {

@@ -1,10 +1,10 @@
 <% layout('layout') -%>
 
 <form class="form-horizontal md-form" action="/login" method="post">
-    <% if (formError) { %>
+    <% if (error) { %>
         <div class="alert alert-danger" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <%= formError %>
+            <%= error.message %>
         </div>
     <% } %>
     <h1 class="form-title col-sm-offset-2 col-sm-10">Sign In</h1>
