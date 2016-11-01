@@ -19,7 +19,6 @@ router.post('/', function(req, res, next) {
             return next(err)
         }
         req.session.userId = user.id;
-        req.session.authorized = true;
         res.redirect('/');
     });
 });
