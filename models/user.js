@@ -1,5 +1,4 @@
 var userUtils = require('../lib/userUtils');
-var async = require('async');
 var AuthError = require('../errors/authError');
 
 module.exports = function(sequelize, DataTypes) {
@@ -46,13 +45,14 @@ module.exports = function(sequelize, DataTypes) {
             validate: {
                 isLongEnough: function (password) {
                     if (password.length < 8) {
-                        throw new Error("Please choose a longer password")
+                        throw new Error("Password is too short")
                     }
                 }
             }
         }
     }, {
         freezeTableName: true,
+        underscored: true,
         getterMethods: {
             fullName: function() {
                 if (this.firstname && this.secondname) {
@@ -81,13 +81,10 @@ module.exports = function(sequelize, DataTypes) {
                     } else {
                         var user = User.build({username: username});
                         user.set('password', password);
-                        var errors = user.validate();
-
                         user.save()
-                            .then(function() {
-                                callback(null, user);
-                            }).catch(function(err) {
-                                callback(err);
+                            .then(function() {callback(null, user)})
+                            .catch(function(err) {
+                                callback(err)
                             });
                     }
                 });

@@ -1,8 +1,3 @@
-// var date = new Date(new Date().getTime() + 60 * 1000);
-// cookieUtils.setCookie('n1', 'v1', {path: '/', expires: date.toUTCString()});
-// cookieUtils.setCookie('n2', 'v2', {path: '/', expires: date.toUTCString()});
-// cookieUtils.setCookie('n3', 'v3', {path: '/', expires: date.toUTCString()});
-
 var cellTemplateSource = document.getElementById("battlefield-cell-template").innerHTML;
 var cellTemplate = Handlebars.compile(cellTemplateSource);
 var fieldSize = {

@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var bodyParser = require('body-parser');
+var expressValidator = require('express-validator');
 var HttpError = require('./errors/httpError');
 
 // routes
@@ -25,12 +26,13 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(expressValidator());
 app.use(cookieParser());
 app.use(session({
     name: 'sid',
     secret: 'r2d2',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false
 }));
 app.use(require('./middleware/sendHttpError'));
 app.use(require('./middleware/loadUser'));
@@ -52,7 +54,7 @@ app.use(function (req, res, next) {
 // error handlers
 // development error handler
 // will print stacktrace
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
     if (typeof err === 'number') {
         err = new HttpError(err);
     }

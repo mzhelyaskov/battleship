@@ -13,10 +13,12 @@
     "ejs-locals": "^1.0.2",
     "express": "~4.13.4",
     "express-session": "^1.14.1",
+    "express-validator": "^2.21.0",
     "morgan": "~1.7.0",
     "mysql": "^2.11.1",
     "nconf": "^0.8.4",
     "sequelize": "^3.24.6",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "ws": "^1.1.1"
   }
 }
