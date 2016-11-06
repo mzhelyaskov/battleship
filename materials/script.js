@@ -5952,10 +5952,10 @@ var sprintf = function(e) {
             return r.find("tr:nth-child(" + (e + 1) + ") td:nth-child(" + (t + 1) + ")").find(".battlefield-cell-content").append(s),
             s
         }
-        function Q(e, t) {
+        function Q(shipObjects, t) {
             var n, i, r, o = [];
-            for (var s in e) {
-                n = e[s],
+            for (var s in shipObjects) {
+                n = shipObjects[s],
                 r = n.coords,
                 i = [];
                 for (var a = 0; a < r.length; a++) {
@@ -6043,8 +6043,8 @@ var sprintf = function(e) {
         }
         function le() {
             mt.find(".battlefield-cell-content").bind("click", ee);
-            var e = Q(shipObjects);
-            ce(e),
+            var shipCollocation = Q(shipObjects);
+            ce(shipCollocation),
             "off" == $.cookie("websocket") && (v = !1);
             var t = s().replace(/^\/[a-z]{2}\//, "/")
               , n = 0 === t.toLowerCase().indexOf("/id") ? t.substr(3) : ""
@@ -6059,7 +6059,7 @@ var sprintf = function(e) {
             pe({
                 command: "create",
                 connect: n,
-                ships: e,
+                ships: shipCollocation,
                 type: bt ? "classic" : "default"
             }, !0, r, me)
         }
@@ -6099,11 +6099,7 @@ var sprintf = function(e) {
             "undefined" != typeof Ue && pe(Ue.obj, Ue.async, Ue.callback, Ue.fallback)
         }
         function pe(t, n, r, o) {
-            if (r = r || function() {}
-            ,
-            o = o || function() {}
-            ,
-            !ft) {
+            if (r = r || function() {}, o = o || function() {}, !ft) {
                 var s = Z();
                 Ue = {
                     obj: t,
@@ -6113,11 +6109,10 @@ var sprintf = function(e) {
                 };
                 var a = JSON.stringify(t);
                 if (v) {
-                    var l = leftLimit()
-                      , u = p;
+                    var l = leftLimit(), u = p;
                     "ws" == l && (u = (h || g) + "." + u);
-                    var f = WebSocket.OPEN || 1
-                      , d = l + "://" + u + "/ws/" + s;
+
+                    var f = WebSocket.OPEN || 1, d = l + "://" + u + "/ws/" + s;
                     if ($e && $e.socket && $e.socket.readyState === f) {
                         if ($e.socket.url === d)
                             return $e.callback = r,

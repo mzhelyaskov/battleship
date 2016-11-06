@@ -3,35 +3,32 @@
 /**
  * Module dependencies.
  */
-var app = require('../app');
+var httpApp = require('../httpApp');
+var wsApp = require('../wsApp');
 var debug = require('debug')('BattleSea:server');
 var http = require('http');
-// var WebSocketServer = require('ws').Server;
+var WebSocketServer = require('ws').Server;
 var config = require('../config');
 
 /**
  * Get port from environment and store in Express.
  */
 var port = normalizePort(process.env.PORT || config.get('port'));
-app.set('port', port);
+httpApp.set('port', port);
 
 /**
  * Create HTTP server.
  */
-var server = http.createServer(app);
+var httpServer = http.createServer(httpApp);
+httpServer.listen(port);
+httpServer.on('error', onError);
+httpServer.on('listening', onListening);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * Create WebSocket Server
  */
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
-/**
- * Create Web Socket Server
- * */
-// require('../wsapp')(new WebSocketServer({server: server}));
-
+var wsServer = new WebSocketServer({server: server});
+wsServer.on('connection', wsApp);
 
 /**
  * Normalize a port into a number, string, or false.
@@ -78,7 +75,7 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 function onListening() {
-  var addr = server.address();
+  var addr = httpServer.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
