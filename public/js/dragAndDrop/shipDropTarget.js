@@ -27,6 +27,30 @@ ShipDropTarget.prototype._getTargetElem = function(avatar, event) {
     // return target;
 };
 
+ShipDropTarget.prototype.onDragMove = function (avatar, event) {
+    var shipElem = avatar._elem;
+    var shipCenter = getShipCoordCenter(shipElem);
+    avatar.removePlaceholderFromDisplay();
+    // shipElem.removeClass("ship-box__transparent");
+    var battleFieldCells = this._elem.querySelectorAll(".battlefield-cell");
+    battleFieldCells.forEach(function(cell) {
+        if (shipPlaceholderInCellZone(cell, shipCenter.Y, shipCenter.X)) {
+            var dataY = parseInt(cell.getAttribute("data-y"), 10);
+            var dataX = parseInt(cell.getAttribute("data-x"), 10);
+            var shipLength = parseInt(shipElem.getAttribute("data-length"), 10);
+            var shipPosition = shipElem.getAttribute("data-position");
+            if (isCellSuitableForShip(dataY, dataX, shipLength, shipPosition, true)) {
+                cell.querySelector(".battlefield-cell-content").appendChild(avatar.placeholder);
+                // shipElem.classList.add("ship-box__transparent");
+            }
+        }
+    });
+};
+
+ShipDropTarget.prototype.onDragEnter = function() {
+     // TODO Можно подсветить поевое поле
+};
+
 ShipDropTarget.prototype.onDragLeave = function(newDropTarget, avatar, e) {
     avatar.removePlaceholderFromDisplay();
 };
@@ -41,8 +65,7 @@ ShipDropTarget.prototype.onDragEnd = function(avatar, event) {
     avatar._elem.style.top = avatar.placeholder.style.top;
     avatar.placeholder.parentNode.removeChild(avatar.placeholder);
     addShipToMap(avatar);
-    
-    
+
     // avatar.placeholder = null;
     // if (!this._targetElem) {
     //     // перенос закончился вне подходящей точки приземления
@@ -73,24 +96,4 @@ ShipDropTarget.prototype.onDragEnd = function(avatar, event) {
     // }
     // ul.insertBefore(elemToMove, li);
     // this._targetElem = null;
-};
-
-ShipDropTarget.prototype.onDragMove = function (avatar, event) {
-    var shipElem = avatar._elem;
-    var shipCenter = getShipCoordCenter(shipElem);
-    avatar.removePlaceholderFromDisplay();
-    // shipElem.removeClass("ship-box__transparent");
-    var battleFieldCells = this._elem.querySelectorAll(".battlefield-cell");
-    battleFieldCells.forEach(function(cell) {
-        if (shipPlaceholderInCellZone(cell, shipCenter.Y, shipCenter.X)) {
-            var dataY = parseInt(cell.getAttribute("data-y"), 10);
-            var dataX = parseInt(cell.getAttribute("data-x"), 10);
-            var shipLength = parseInt(shipElem.getAttribute("data-length"), 10);
-            var shipPosition = shipElem.getAttribute("data-position");
-            if (isCellSuitableForShip(dataY, dataX, shipLength, shipPosition, true)) {
-                cell.querySelector(".battlefield-cell-content").appendChild(avatar.placeholder);
-                // shipElem.classList.add("ship-box__transparent");
-            }
-        }
-    });
 };

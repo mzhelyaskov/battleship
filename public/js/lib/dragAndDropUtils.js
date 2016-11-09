@@ -30,10 +30,8 @@ function getShipCoordCenter(shipElem) {
 * Возвращает элемент, который находится на координатах (x, y) относительно окна.
 */
 function getElementUnderClientXY(elem, clientX, clientY) {
-    //Скрываем элемент который перетаскиваем
     var display = elem.style.display || '';
     elem.style.display = 'none';
-    //elementFromPoint возвращает элемент, который находится на координатах (x, y) относительно окна.
     var target = document.elementFromPoint(clientX, clientY);
     elem.style.display = display;
     if (!target || target == document) { // это бывает при выносе за границы окна
@@ -42,13 +40,7 @@ function getElementUnderClientXY(elem, clientX, clientY) {
     return target;
 }
 
-function extend(Child, Parent) {
-    function F() {}
-    F.prototype = Parent.prototype;
-    Child.prototype = new F();
-    Child.prototype.constructor = Child;
-    Child.parent = Parent.prototype
-}
+
 
 function addShipToMap(avatar) {
     var cell = avatar._elem.closest(".battlefield-cell");

@@ -16,20 +16,10 @@ DragZone.prototype.createAvatar = function() {
     /* override */
 };
 
-/**
- * Обработать начало переноса.
- * Получает координаты изначального нажатия мышки, событие.
- * @param downX Координата изначального нажатия по X
- * @param downY Координата изначального нажатия по Y
- * @param event текущее событие мыши
- * @return аватар или false, если захватить с данной точки ничего нельзя
- */
 DragZone.prototype.onDragStart = function(downX, downY, event) {
-    
-    var avatar = this.createAvatar();
-    if (!avatar.initFromEvent(downX, downY, event)) {
-        return false;
-    }
-    
-    return avatar;
+    /* override */
+};
+
+DragZone.prototype.identifyDragElem = function(downX, downY, event) {
+    /* override */
 };

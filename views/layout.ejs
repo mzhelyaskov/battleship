@@ -7,21 +7,24 @@
     <link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet"/>
     <link href="/bower_components/bootstrap/dist/css/bootstrap-theme.css" rel="stylesheet"/>
     <link href="/css/style.css" rel="stylesheet"/>
-    <!-- scrypts -->
-    <script src="/js/lib/cookieUtils.js"></script>
-    <script src="/js/handlebars.js"></script>
-    <script src="/js/dragAndDropUtils/lib.js"></script>
-    <script src="/js/dragAndDropUtils/dragManager.js"></script>
-    <script src="/js/dragAndDropUtils/dragAvatar.js"></script>
-    <script src="/js/dragAndDropUtils/dragZone.js"></script>
-    <script src="/js/dragAndDropUtils/dropTarget.js"></script>
-    <script src="/js/shipDragAvatar.js"></script>
-    <script src="/js/portDragZone.js"></script>
-    <script src="/js/shipDropTarget.js"></script>
+    <!-- libs -->
+    <script src="/js/lib/cookieService.js"></script>
+    <script src="/js/lib/dragAndDropUtils.js"></script>
+    <script src="/js/lib/handlebars.js"></script>
+    <script src="/js/lib/util.js"></script>
+    <!-- dragAndDrop -->
+    <script src="/js/dragAndDrop/dragManager.js"></script>
+    <script src="/js/dragAndDrop/dragAvatar.js"></script>
+    <script src="/js/dragAndDrop/dragZone.js"></script>
+    <script src="/js/dragAndDrop/dropTarget.js"></script>
+    <script src="/js/dragAndDrop/shipDragAvatar.js"></script>
+    <script src="/js/dragAndDrop/portDragZone.js"></script>
+    <script src="/js/dragAndDrop/shipDropTarget.js"></script>
 </head>
 <body class="body">
+<%- partial('partials/topNavigation') %>
+<ul id="dragMonitor" style="position: absolute; left: 5px; top: 60px"></ul>
 <div class="container">
-    <%- partial('partials/topNavigation') %>
     <%- body %>
 </div>
 <div id="point"></div>

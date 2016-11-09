@@ -27,7 +27,7 @@ httpServer.on('listening', onListening);
 /**
  * Create WebSocket Server
  */
-var wsServer = new WebSocketServer({server: server});
+var wsServer = new WebSocketServer({server: httpServer});
 wsServer.on('connection', wsApp);
 
 /**

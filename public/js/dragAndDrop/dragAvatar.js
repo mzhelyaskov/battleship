@@ -6,20 +6,8 @@
  * Также аватар может быть иконкой и вообще чем угодно.
  */
 function DragAvatar(dragZone, dragElem) {
-    /** "родительская" зона переноса */
     this._dragZone = dragZone;
-
-    /**
-     * подэлемент родительской зоны, к которому относится аватар
-     * по умолчанию - элемент, соответствующий всей зоне
-     * может быть уточнен в initFromEvent
-     */
-    this._dragZoneElem = dragElem;
-
-    /**
-     * Сам элемент аватара, который будет носиться по экрану.
-     * Инициализуется в initFromEvent
-     */
+    this._dragElem = dragElem;
     this._elem = dragElem;
 }
 
@@ -34,17 +22,16 @@ DragAvatar.prototype.initFromEvent = function(downX, downY, event) {
     /* override */
 };
 
+DragAvatar.prototype.createPlaceholder = function() {
+    /* override */
+};
+
 /**
  * Возвращает информацию о переносимом элементе для DropTarget
  * @param event
  */
 DragAvatar.prototype.getDragInfo = function(event) {
-    // тут может быть еще какая-то информация, необходимая для обработки конца или процесса переноса
-    return {
-        elem: this._elem,
-        dragZoneElem: this._dragZoneElem,
-        dragZone: this._dragZone
-    };
+    /* override */
 };
 
 /**
@@ -55,21 +42,17 @@ DragAvatar.prototype.getTargetElem = function() {
     return this._elementUnderAvatar;
 };
 
+DragAvatar.prototype.onDragStart = function (downX, downY, event) {
+    /* override */
+};
+
 /**
  * При каждом движении мыши перемещает this._elem
  * и записывает текущий элемент под this._elem в _elementUnderAvatar
  * @param event
  */
 DragAvatar.prototype.onDragMove = function(event) {
-    var shipElem = this._elem;
-    shipElem.style.left = event.pageX - this._shiftX + 'px';
-    shipElem.style.top = event.pageY - this._shiftY + 'px';
-    var shipCenter = getShipCoordCenter(shipElem);
-    this._elementUnderAvatar = getElementUnderClientXY(this._elem, event.clientX, event.clientY);
-
-    var point = document.getElementById("point");
-    point.style.left = shipCenter.X + 'px';
-    point.style.top = shipCenter.Y + 'px';
+    /* override */
 };
 
 /**
@@ -81,7 +64,7 @@ DragAvatar.prototype.onDragCancel = function() {
 };
 
 /**
- * Действия с аватаром после успешного переноса
+ * Уничтожение всех привязанных к аватару элементов
  */
 DragAvatar.prototype.onDragEnd = function() {
     /* override */

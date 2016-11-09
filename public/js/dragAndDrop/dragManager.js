@@ -1,9 +1,9 @@
 var dragManager = new function() {
 
-    var dragZone; // зона откуда переносим
-    var avatar; // визуальное представление переносимого объекта
-    var dropTarget; // зона на которую переносим
-    var downX, downY;
+    var dragZone;
+    var avatar;
+    var dropTarget;
+    var downX, downY, clientX, clientY;
 
     function onMouseDown(event) {
         if (event.which != 1) { // не левой кнопкой
@@ -13,20 +13,25 @@ var dragManager = new function() {
         if (!dragZone) return;
         downX = event.pageX;
         downY = event.pageY;
+        clientX = event.clientX;
+        clientY = event.clientY;
         return false;
     }
 
     function onMouseMove(e) {
-        if (!dragZone) return; // элемент не зажат
-        if (!avatar) { // элемент нажат, но пока не начали его двигать
+        updateDragMonitor(downX, downY, clientX, clientY, dragZone, avatar, dropTarget);
+        if (!dragZone) return;
+        if (!avatar) {
             if (Math.abs(e.pageX - downX) < 3 && Math.abs(e.pageY - downY) < 3) {
                 return;
             }
-            avatar = dragZone.onDragStart(downX, downY, e);
-            if (!avatar) { // не получилось, значит перенос продолжать нельзя
-                cleanUp(); // очистить приватные переменные, связанные с переносом
+            dragZone.identifyDragElem(clientX, clientY, e);
+            if (!dragZone._dragElem) {
+                cleanUp();
                 return;
             }
+            avatar = dragZone.createAvatar(downX, downY, e);
+            avatar.onDragStart();
         }
         avatar.onDragMove(e);
         var newDropTarget = findDropTarget(e);
@@ -36,17 +41,17 @@ var dragManager = new function() {
         }
         dropTarget = newDropTarget;
         dropTarget && dropTarget.onDragMove(avatar, e);
+        updateDragMonitor(downX, downY, dragZone, avatar, dropTarget);
         return false;
     }
 
     function onMouseUp(e) {
-        if (e.which != 1) { // не левой кнопкой
+        if (e.which != 1) {
             return false;
         }
-        if (avatar) { // если уже начали передвигать
+        if (avatar) {
+            avatar.onDragEnd();
             if (dropTarget) {
-                // завершить перенос и избавиться от аватара, если это нужно
-                // эта функция обязана вызвать avatar.onDragEnd/onDragCancel
                 dropTarget.onDragEnd(avatar, e);
             } else {
                 avatar.onDragCancel();
@@ -96,3 +101,17 @@ var dragManager = new function() {
         return elem.dropTarget;
     }
 };
+
+
+function updateDragMonitor(downX, downY, clientX, clientY, dragZone, avatar, dropTarget) {
+    if (!avatar) return
+    var dragMonitor = document.getElementById('dragMonitor');
+    var list = [];
+    list.push('<li>downX: ' + downX + '</li>');
+    list.push('<li>downY: ' + downY + '</li>');
+    list.push('<li>clientX: ' + clientX + '</li>');
+    list.push('<li>clientY: ' + clientY + '</li>');
+    list.push('<li>shiftX: ' + avatar._shiftX + '</li>');
+    list.push('<li>shiftY: ' + avatar._shiftY + '</li>');
+    dragMonitor.innerHTML = list.join('');
+}

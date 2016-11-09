@@ -81,7 +81,8 @@ function collocateShips() {
 
 collocateShips();
 
-new PortDragZone(document.querySelector(".container"));
+new PortDragZone(document.getElementById("port"));
+// new BattleFieldDragZone(document.querySelector("battlefield-table"));
 new ShipDropTarget(document.getElementById('battlefield-table'));
 
 
