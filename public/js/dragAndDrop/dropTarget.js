@@ -2,13 +2,9 @@
  * Зона, в которую объекты можно класть
  * Занимается индикацией передвижения по себе, добавлением в себя
  */
-function DropTarget(elem) {
+function DropZone(elem) {
     elem.dropTarget = this;
     this._elem = elem;
-
-    /**
-     * Подэлемент, над которым в настоящий момент находится аватар
-     */
     this._targetElem = null;
 }
 
@@ -16,30 +12,14 @@ function DropTarget(elem) {
  * Возвращает DOM-подэлемент, над которым сейчас пролетает аватар
  * @return DOM-элемент, на который можно положить или undefined
  */
-DropTarget.prototype._getTargetElem = function(avatar, event) {
-    return this._elem;
-};
-
-/**
- * Спрятать индикацию переноса
- * Вызывается, когда аватар уходит с текущего this._targetElem
- */
-DropTarget.prototype._hideHoverIndication = function(avatar) {
-    /* override */
-};
-
-/**
- * Показать индикацию переноса
- * Вызывается, когда аватар пришел на новый this._targetElem
- */
-DropTarget.prototype._showHoverIndication = function(avatar) {
+DropZone.prototype.getTargetElem = function(avatar) {
     /* override */
 };
 
 /**
  * Метод вызывается при каждом движении аватара
  */
-DropTarget.prototype.onDragMove = function(avatar, event) {
+DropZone.prototype.onDragMove = function(avatar, event) {
     /* override */
 };
 
@@ -56,20 +36,20 @@ DropTarget.prototype.onDragMove = function(avatar, event) {
  *  снять текущую индикацию переноса
  *  обнулить this._targetElem
  */
-DropTarget.prototype.onDragEnd = function(avatar, event) {
+DropZone.prototype.onDragEnd = function(avatar, event) {
     /* override */
 };
 
 /**
- * Вход аватара в DropTarget
+ * Вход аватара в DropZone
  */
-DropTarget.prototype.onDragEnter = function(fromDropTarget, avatar, event) {
+DropZone.prototype.onDragEnter = function(fromDropTarget, avatar) {
     /* override */
 };
 
 /**
- * Выход аватара из DropTarget
+ * Выход аватара из DropZone
  */
-DropTarget.prototype.onDragLeave = function(toDropTarget, avatar, event) {
+DropZone.prototype.onDragLeave = function(toDropTarget, avatar) {
     /* override */
 };

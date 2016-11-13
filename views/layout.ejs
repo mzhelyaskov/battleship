@@ -27,7 +27,9 @@
 <div class="container">
     <%- body %>
 </div>
-<div id="point"></div>
+<div id="point">
+    <span style="position: absolute; left: -17px; top: 17px; font: 10px monospace; width: 100px;"></span>
+</div>
 <div id="muc"></div>
 
 <script id="battlefield-cell-template" type="text/x-handlebars-template">
@@ -39,17 +41,18 @@
     <div class="row">
         <div class="col-md-12">
             {{#each ships}}
-            <div class="port-ship"
-                 style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;">
-                <div data-id="{{id}}" data-length="{{size}}" data-position="{{position}}" class="{{className}}"
-                     style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;"></div>
-            </div>
+                <div class="port-ship" style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;">
+                    <div data-id="{{id}}" data-length="{{size}}" data-position="{{position}}" class="{{className}}" style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;"></div>
+                </div>
             {{/each}}
         </div>
     </div>
 </script>
 <script src="/bower_components/jquery/dist/jquery.js"></script>
 <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/js/templates.js"></script>
+<script src="/js/constants.js"></script>
+<script src="/js/utils/gameUtils.js"></script>
 <%- scripts %>
 </body>
 </html>

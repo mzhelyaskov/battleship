@@ -1,5 +1,5 @@
 /**
- * Определяет координаты элемента относительно страницы
+ * Определяет координаты элемента относительно document
  */
 function getCoords(elem) {
     var box = elem.getBoundingClientRect();
@@ -11,19 +11,7 @@ function getCoords(elem) {
     var clientLeft = docElem.clientLeft || body.clientLeft || 0;
     var top = box.top + scrollTop - clientTop;
     var left = box.left + scrollLeft - clientLeft;
-    return {
-        top: Math.round(top),
-        left: Math.round(left)
-    };
-}
-
-function getShipCoordCenter(shipElem) {
-    var shipOffset = getCoords(shipElem);
-    var offset = Math.min(shipElem.offsetHeight, shipElem.offsetWidth);
-    return {
-        Y: shipOffset.top + offset / 2,
-        X: shipOffset.left + offset / 2
-    }
+    return {top: Math.round(top), left: Math.round(left)};
 }
 
 /**
@@ -39,8 +27,6 @@ function getElementUnderClientXY(elem, clientX, clientY) {
     }
     return target;
 }
-
-
 
 function addShipToMap(avatar) {
     var cell = avatar._elem.closest(".battlefield-cell");
@@ -71,14 +57,15 @@ function getCellSize(dropTarget) {
     }
 }
 
-function shipPlaceholderInCellZone(cell, shipCenterY, shipCenterX) {
-    var cellOffset = getCoords(cell);
+function isCellUnderAvatar(cell, avatar) {
+    var cellOffset = cell.getBoundingClientRect();
     var cellWidth = cell.offsetWidth;
     var cellHeight = cell.offsetHeight;
-    return shipCenterX >= cellOffset.left 
-    && shipCenterX <= cellOffset.left + cellWidth 
-    && shipCenterY >= cellOffset.top 
-    && shipCenterY <= cellOffset.top + cellHeight;
+    var centerCoords = avatar.getCenterCoords();
+    return centerCoords.clientX >= cellOffset.left
+    && centerCoords.clientX <= cellOffset.left + cellWidth
+    && centerCoords.clientY >= cellOffset.top
+    && centerCoords.clientY <= cellOffset.top + cellHeight;
 }
 
 var marker = {
@@ -110,7 +97,7 @@ function getShipId() {
 }
 
 function isCellBusy(row, col) {
-    return mapOfBusyAndFreeCells[row][col] == marker.BUSY;
+    return busyAndFreeCells[row][col] == marker.BUSY;
 }
 
 function isCellUnsuitableForShip(row, col) {
@@ -160,7 +147,7 @@ function isCellSuitableForShip(dataY, dataX, dataLength, dataPosition, checkTarg
         if (checkTargetCells) {
             allCellsAroundAreSuitable(row, col) && countOfCorrectCells++;
         } else {
-            mapOfBusyAndFreeCells[row][col] = marker.BUSY;
+            busyAndFreeCells[row][col] = marker.BUSY;
             newShipObject.coords.push({
                 y: row,
                 x: col,

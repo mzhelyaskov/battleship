@@ -17,11 +17,11 @@ ShipDragAvatar.prototype.initFromEvent = function(downX, downY, event) {
 };
 
 ShipDragAvatar.prototype.createPlaceholder = function () {
-    this.placeholder = this._elem.cloneNode(true);
-    this.placeholder.classList.add("ship-placeholder");
-    this.placeholder.style.left = 0;
-    this.placeholder.style.right = 0;
-    this.placeholder.style.margin = "-2px";
+    this._placeholder = this._elem.cloneNode(true);
+    this._placeholder.classList.add("ship-placeholder");
+    this._placeholder.style.left = 0;
+    this._placeholder.style.right = 0;
+    this._placeholder.style.margin = "-2px";
 };
 
 ShipDragAvatar.prototype.onDragStart = function () {
@@ -32,27 +32,35 @@ ShipDragAvatar.prototype.onDragMove = function (event) {
     var avatarElem = this._elem;
     avatarElem.style.left = event.pageX - this._shiftX + 'px';
     avatarElem.style.top = event.pageY - this._shiftY + 'px';
-
-    /* тестовые данные */
-    var shipCenter = getShipCoordCenter(avatarElem);
-    this._elementUnderAvatar = getElementUnderClientXY(avatarElem, event.clientX, event.clientY);
+    this.center = this.getCenterCoords();
+    this._elementUnderAvatar = getElementUnderClientXY(avatarElem, this.center.clientX, this.center.clientY);
+    
+    /** 
+     * тестовые данные 
+     **/
+    var shipOffset = getCoords(avatarElem);
     var point = document.getElementById("point");
-    var pointCoords = 'x:' + Math.floor(shipCenter.X) + ' y:' + Math.floor(shipCenter.Y);
-    point.innerHTML = '<span style="position: absolute; left: -17px; top: 17px; font: 10px monospace; width: 100px;">' + pointCoords  + '</span>';
-    point.style.left = shipCenter.X + 'px';
-    point.style.top = shipCenter.Y + 'px';
+    var offset = Math.min(avatarElem.offsetHeight, avatarElem.offsetWidth);
+    point.firstElementChild.innerHTML = 'x:' + this.center.clientX + ' y:' + this.center.clientY;
+    point.style.left = Math.floor(shipOffset.left + offset / 2) + 'px';
+    point.style.top = Math.floor(shipOffset.top + offset / 2) + 'px';
 };
 
 ShipDragAvatar.prototype.onDragCancel = function() {
-    this._dragElem.style.visibility = 'visible';
-    // this.oldParent.insertBefore(this._elem, this.oldNextSibling);
-    // this._elem.style.position = this.oldPosition;
-    // this._elem.style.left = this.oldStyleLeft;
-    // this._elem.style.top = this.oldStyleTop;
+    
 };
 
 ShipDragAvatar.prototype.onDragEnd = function () {
-    if (this._elem instanceof HTMLElement) {
-        this._elem.parentNode.removeChild(this._elem);
-    }
+    this.removeAvatar();
+    this._dragElem.style.visibility = 'visible';
+};
+
+ShipDragAvatar.prototype.getCenterCoords = function () {
+    var avatarElem = this._elem;
+    var shipOffset = avatarElem.getBoundingClientRect();
+    var offset = Math.min(avatarElem.offsetHeight, avatarElem.offsetWidth);
+    return {
+        clientY: Math.floor(shipOffset.top + offset / 2),
+        clientX: Math.floor(shipOffset.left + offset / 2)
+    };
 };

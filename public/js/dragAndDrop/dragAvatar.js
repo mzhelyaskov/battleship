@@ -9,6 +9,7 @@ function DragAvatar(dragZone, dragElem) {
     this._dragZone = dragZone;
     this._dragElem = dragElem;
     this._elem = dragElem;
+    this._placeholder = null;
 }
 
 /**
@@ -26,20 +27,34 @@ DragAvatar.prototype.createPlaceholder = function() {
     /* override */
 };
 
+DragAvatar.prototype.hidePlaceholder = function() {
+    this._placeholder.parentNode.removeChild(this._placeholder)
+};
+
+DragAvatar.prototype.showPlaceholder = function(parentElem) {
+    parentElem.appendChild(this._placeholder);
+};
+
+DragAvatar.prototype.showAvatar = function () {
+    this._elem.style.visibility = 'visible';
+};
+
+DragAvatar.prototype.hideAvatar = function () {
+    this._elem.style.visibility = 'hidden';
+};
+
+DragAvatar.prototype.removeAvatar = function () {
+    var parentNode = this._elem.parentNode;
+    parentNode && parentNode.removeChild(this._elem);
+};
+
+
 /**
- * Возвращает информацию о переносимом элементе для DropTarget
+ * Возвращает информацию о переносимом элементе для DropZone
  * @param event
  */
 DragAvatar.prototype.getDragInfo = function(event) {
     /* override */
-};
-
-/**
- * Возвращает текущий самый глубокий DOM-элемент под this._elem
- * Приватное свойство _elementUnderAvatar обновляется при каждом передвижении
- */
-DragAvatar.prototype.getTargetElem = function() {
-    return this._elementUnderAvatar;
 };
 
 DragAvatar.prototype.onDragStart = function (downX, downY, event) {

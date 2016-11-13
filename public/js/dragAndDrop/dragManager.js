@@ -2,7 +2,7 @@ var dragManager = new function() {
 
     var dragZone;
     var avatar;
-    var dropTarget;
+    var dropZone, dropTarget;
     var downX, downY, clientX, clientY;
 
     function onMouseDown(event) {
@@ -18,43 +18,43 @@ var dragManager = new function() {
         return false;
     }
 
-    function onMouseMove(e) {
+    function onMouseMove(event) {
         updateDragMonitor(downX, downY, clientX, clientY, dragZone, avatar, dropTarget);
         if (!dragZone) return;
         if (!avatar) {
-            if (Math.abs(e.pageX - downX) < 3 && Math.abs(e.pageY - downY) < 3) {
+            if (Math.abs(event.pageX - downX) < 3 && Math.abs(event.pageY - downY) < 3) {
                 return;
             }
-            dragZone.identifyDragElem(clientX, clientY, e);
+            dragZone.identifyDragElem(clientX, clientY, event);
             if (!dragZone._dragElem) {
                 cleanUp();
                 return;
             }
-            avatar = dragZone.createAvatar(downX, downY, e);
+            avatar = dragZone.createAvatar(downX, downY, event);
             avatar.onDragStart();
         }
-        avatar.onDragMove(e);
-        var newDropTarget = findDropTarget(e);
-        if (newDropTarget != dropTarget) {
-            dropTarget && dropTarget.onDragLeave(newDropTarget, avatar, e);
-            newDropTarget && newDropTarget.onDragEnter(dropTarget, avatar, e);
+        avatar.onDragMove(event);
+        dropZone = findDropZone(event);
+        if (dropZone) {
+            var newDropTarget = dropZone.getTargetElem(avatar);
+            if (newDropTarget != dropTarget) {
+                dropTarget && dropZone.onDragLeave(dropTarget, avatar);
+                newDropTarget && dropZone.onDragEnter(newDropTarget, avatar);
+            }
+            dropTarget = newDropTarget;
+            dropZone.onDragMove(dropTarget, avatar, event);
         }
-        dropTarget = newDropTarget;
-        dropTarget && dropTarget.onDragMove(avatar, e);
-        updateDragMonitor(downX, downY, dragZone, avatar, dropTarget);
         return false;
     }
 
-    function onMouseUp(e) {
-        if (e.which != 1) {
+    function onMouseUp(event) {
+        if (event.which != 1) {
             return false;
         }
         if (avatar) {
             avatar.onDragEnd();
-            if (dropTarget) {
-                dropTarget.onDragEnd(avatar, e);
-            } else {
-                avatar.onDragCancel();
+            if (dropZone) {
+                dropZone.onDragEnd(avatar);
             }
         }
         cleanUp();
@@ -68,7 +68,6 @@ var dragManager = new function() {
     };
 
     function cleanUp() {
-        // очистить все промежуточные объекты
         dragZone = avatar = dropTarget = null;
     }
 
@@ -89,9 +88,8 @@ var dragManager = new function() {
      * Находит элемент на который можно переносить элемент
      * Возвращает DOM элемент котормоу присвоено поле dropTarget 
      **/
-    function findDropTarget(event) {
-        // получить элемент под аватаром
-        var elem = avatar.getTargetElem();
+    function findDropZone(event) {
+        var elem = avatar._elementUnderAvatar;
         while (elem != document && !elem.dropTarget) {
             elem = elem.parentNode;
         }

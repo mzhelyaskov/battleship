@@ -1,89 +1,13 @@
-var cellTemplateSource = document.getElementById("battlefield-cell-template").innerHTML;
-var cellTemplate = Handlebars.compile(cellTemplateSource);
-var fieldSize = {
-    height: 10,
-    width: 10
-};
-var letters = "А,Б,В,Г,Д,Е,Ж,З,И,К".split(",");
+
 var rows = [];
-mapOfBusyAndFreeCells = [];
+busyAndFreeCells = [];
 
-document.getElementById('battlefield-placeholder').innerHTML = "";
-for (var row = 0; row < fieldSize.height; row++) {
-    mapOfBusyAndFreeCells[row] = [];
-    var cellsHtml = [];
-    for (var col = 0; col < fieldSize.width; col++) {
-        var cellLabel = "";
-        if (col === 0) {
-            cellLabel += '<div class="marker marker-row">' + (row + 1) + "</div>"
-        }
-        if (row === 0) {
-            cellLabel += '<div class="marker marker-col">' + letters[col] + "</div>"
-        }
-        cellsHtml.push(cellTemplate({col: col, row: row, cellLabel: cellLabel}));
-        mapOfBusyAndFreeCells[row][col] = marker.FREE;
-    }
-    rows.push('<tr class="battlefield-row">' + cellsHtml.join("") + "</tr>")
-}
-var placeholder = document.getElementById("battlefield-placeholder");
-placeholder.innerHTML = '<table id="battlefield-table">' + rows.join("") + "</table>";
-
-function createShip(shipSize, position, id) {
-    id = id || "";
-    var width = 1;
-    var length = shipSize;
-    var correction = {right: 0, bottom: shipSize - 1};
-    if ("h" == position) {
-        width = shipSize; length = 1; correction.right = shipSize - 1; correction.bottom = 0;
-    }
-    var scale = 2;
-    return {
-        id: id,
-        size: shipSize,
-        position: position,
-        className: 'ship draggable',
-        width: width * scale,
-        height: length * scale,
-        paddingRight: correction.right,
-        paddingBottom: correction.bottom
-    };
-}
-
-var collocations = [{
-        size: 4,
-        count: 1
-    }, {
-        size: 3,
-        count: 2
-    }, {
-        size: 2,
-        count: 3
-    }, {
-        size: 1,
-        count: 4
-}];
-
-function collocateShips() {
-    var port = document.getElementById("port");
-    var portLines = [];
-    var shipLineTemplateSource = document.getElementById('port-line').innerHTML;
-    var shipLineTemplate = Handlebars.compile(shipLineTemplateSource);
-    for (var i = 0; i < collocations.length; i++) {
-        var collocation = collocations[i];
-        var ships = [];
-        for (var j = 0; j < collocation.count; j++) {
-            ships.push(createShip(collocation.size, "h", getShipId()));
-        }
-        portLines.push(shipLineTemplate({ships: ships}));
-    }
-    port.innerHTML = portLines.join('');
-}
-
+createBattleField();
 collocateShips();
 
 new PortDragZone(document.getElementById("port"));
-// new BattleFieldDragZone(document.querySelector("battlefield-table"));
-new ShipDropTarget(document.getElementById('battlefield-table'));
+new ShipDropZone(document.getElementById('battlefield-table'));
+new PortDragZone(document.getElementById('battlefield-table'));
 
 
 
