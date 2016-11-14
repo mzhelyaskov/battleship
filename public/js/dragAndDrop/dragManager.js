@@ -1,12 +1,11 @@
 var dragManager = new function() {
-
     var dragZone;
     var avatar;
     var dropZone, dropTarget;
     var downX, downY, clientX, clientY;
 
     function onMouseDown(event) {
-        if (event.which != 1) { // не левой кнопкой
+        if (event.which != 1) {
             return false;
         }
         dragZone = findDragZone(event);
@@ -26,14 +25,14 @@ var dragManager = new function() {
                 return;
             }
             dragZone.identifyDragElem(clientX, clientY, event);
-            if (!dragZone._dragElem) {
+            if (!dragZone.dragElem) {
                 cleanUp();
                 return;
             }
             avatar = dragZone.createAvatar(downX, downY, event);
             avatar.onDragStart();
         }
-        avatar.onDragMove(event);
+        avatar.onDragMove(event, dropZone);
         dropZone = findDropZone(event);
         if (dropZone) {
             var newDropTarget = dropZone.getTargetElem(avatar);
@@ -71,11 +70,6 @@ var dragManager = new function() {
         dragZone = avatar = dropTarget = null;
     }
 
-    /**
-     * функция для определения области в которой находятся объекты для переноса.
-     * Находит ближайший dragZone идем вверх по родителям от target
-     * до элемента document и ищим элемент с полем dragZone
-     **/
     function findDragZone(event) {
         var elem = event.target;
         while (elem != document && !elem.dragZone) {
@@ -84,12 +78,8 @@ var dragManager = new function() {
         return elem.dragZone;
     }
 
-    /**
-     * Находит элемент на который можно переносить элемент
-     * Возвращает DOM элемент котормоу присвоено поле dropTarget 
-     **/
     function findDropZone(event) {
-        var elem = avatar._elementUnderAvatar;
+        var elem = avatar.elementUnderAvatar;
         while (elem != document && !elem.dropTarget) {
             elem = elem.parentNode;
         }
@@ -102,14 +92,14 @@ var dragManager = new function() {
 
 
 function updateDragMonitor(downX, downY, clientX, clientY, dragZone, avatar, dropTarget) {
-    if (!avatar) return
+    if (!avatar) return;
     var dragMonitor = document.getElementById('dragMonitor');
     var list = [];
     list.push('<li>downX: ' + downX + '</li>');
     list.push('<li>downY: ' + downY + '</li>');
     list.push('<li>clientX: ' + clientX + '</li>');
     list.push('<li>clientY: ' + clientY + '</li>');
-    list.push('<li>shiftX: ' + avatar._shiftX + '</li>');
-    list.push('<li>shiftY: ' + avatar._shiftY + '</li>');
+    list.push('<li>shiftX: ' + avatar.shiftX + '</li>');
+    list.push('<li>shiftY: ' + avatar.shiftY + '</li>');
     dragMonitor.innerHTML = list.join('');
 }

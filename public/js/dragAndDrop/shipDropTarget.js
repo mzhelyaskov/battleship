@@ -5,30 +5,22 @@ function ShipDropZone(elem) {
 extend(ShipDropZone, DropZone);
 
 ShipDropZone.prototype.getTargetElem = function(avatar) {
-    var battleField = this._elem;
-    var cells = battleField.querySelectorAll(".battlefield-cell");
+    var battleField = this.elem;
+    var cells = battleField.querySelectorAll(BATTLE_FIELD_CELL_CSS);
     for (var i = 0; i < cells.length; i++) {
         var cell = cells[i];
         if (isCellUnderAvatar(cell, avatar)) {
-            var cellY = parseInt(cell.dataset.y, 10);
-            var cellX = parseInt(cell.dataset.x, 10);
-            var shipLength = parseInt(avatar._elem.dataset.length, 10);
-            var shipPosition = avatar._elem.dataset.position;
-            if (isCellSuitableForShip(cellY, cellX, shipLength, shipPosition, true)) {
-                return this._targetElem = cell;
+            if (isCellAvailable(cell, avatar)) {
+                return this.targetElem = cell;
             }
         }
     }
-    return this._targetElem = null;
-};
-
-ShipDropZone.prototype.onDragMove = function(dropTarget, avatar, event) {
-
+    return this.targetElem = null;
 };
 
 ShipDropZone.prototype.onDragEnter = function(cell, avatar) {
-    var cellContent = cell.querySelector(".battlefield-cell-content");
-    avatar.showPlaceholder(cellContent);
+    var placeholderParent = cell.querySelector(CELL_CONTENT_CSS);
+    avatar.showPlaceholder(placeholderParent);
     avatar.hideAvatar();
 };
 
@@ -38,18 +30,12 @@ ShipDropZone.prototype.onDragLeave = function(cell, avatar) {
 };
 
 ShipDropZone.prototype.onDragEnd = function(avatar) {
-    if (this._targetElem) {
-        avatar._placeholder.parentNode.appendChild(avatar._dragElem);
-        avatar.hidePlaceholder();
-    }
-
-    // if (!avatar.placeholder.parentNode) {
-    //     return;
-    // }
-    // avatar.placeholder.parentNode.insertBefore(avatar._elem, avatar.placeholder.nextSibling);
-    // avatar._elem.style.position = avatar.placeholder.style.position;
-    // avatar._elem.style.left = avatar.placeholder.style.left;
-    // avatar._elem.style.top = avatar.placeholder.style.top;
-    // avatar.placeholder.parentNode.removeChild(avatar.placeholder);
-    // addShipToMap(avatar);
+    if (!this.targetElem) return;
+    var cellElem = this.targetElem;
+    var shipElem = avatar.dragElem;
+    var ship = shipElem.ship;
+    shipUtils.insertShipElemIntoContent(shipElem, cellElem);
+    shipUtils.updateProperties(ship, cellElem, avatar.elem);
+    battleField.addShipToField(ship);
+    avatar.hidePlaceholder();
 };

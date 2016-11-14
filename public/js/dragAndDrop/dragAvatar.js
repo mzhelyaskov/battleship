@@ -1,15 +1,9 @@
-/**
- * "Аватар" - элемент, который перетаскивается.
- *
- * В простейшем случае аватаром является сам переносимый элемент
- * Также аватар может быть клонированным элементом
- * Также аватар может быть иконкой и вообще чем угодно.
- */
+
 function DragAvatar(dragZone, dragElem) {
-    this._dragZone = dragZone;
-    this._dragElem = dragElem;
-    this._elem = dragElem;
-    this._placeholder = null;
+    this.dragZone = dragZone;
+    this.dragElem = dragElem;
+    this.elem = dragElem;
+    this.placeholder = null;
 }
 
 /**
@@ -28,26 +22,26 @@ DragAvatar.prototype.createPlaceholder = function() {
 };
 
 DragAvatar.prototype.hidePlaceholder = function() {
-    this._placeholder.parentNode.removeChild(this._placeholder)
+    var parentNode = this.placeholder.parentNode;
+    parentNode && parentNode.removeChild(this.placeholder);
 };
 
 DragAvatar.prototype.showPlaceholder = function(parentElem) {
-    parentElem.appendChild(this._placeholder);
+    parentElem.appendChild(this.placeholder);
 };
 
 DragAvatar.prototype.showAvatar = function () {
-    this._elem.style.visibility = 'visible';
+    this.elem.style.visibility = 'visible';
 };
 
 DragAvatar.prototype.hideAvatar = function () {
-    this._elem.style.visibility = 'hidden';
+    this.elem.style.visibility = 'hidden';
 };
 
 DragAvatar.prototype.removeAvatar = function () {
-    var parentNode = this._elem.parentNode;
-    parentNode && parentNode.removeChild(this._elem);
+    var parentNode = this.elem.parentNode;
+    parentNode && parentNode.removeChild(this.elem);
 };
-
 
 /**
  * Возвращает информацию о переносимом элементе для DropZone
@@ -62,8 +56,8 @@ DragAvatar.prototype.onDragStart = function (downX, downY, event) {
 };
 
 /**
- * При каждом движении мыши перемещает this._elem
- * и записывает текущий элемент под this._elem в _elementUnderAvatar
+ * При каждом движении мыши перемещает this.elem
+ * и записывает текущий элемент под this.elem в elementUnderAvatar
  * @param event
  */
 DragAvatar.prototype.onDragMove = function(event) {

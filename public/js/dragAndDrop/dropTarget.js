@@ -4,8 +4,8 @@
  */
 function DropZone(elem) {
     elem.dropTarget = this;
-    this._elem = elem;
-    this._targetElem = null;
+    this.elem = elem;
+    this.targetElem = null;
 }
 
 /**
@@ -27,14 +27,14 @@ DropZone.prototype.onDragMove = function(avatar, event) {
  *  Завершение переноса.
  *  Алгоритм обработки (переопределить функцию и написать в потомке):
  *      1. Получить данные переноса из avatar.getDragInfo()
- *      2. Определить, возможен ли перенос на _targetElem (если он есть)
+ *      2. Определить, возможен ли перенос на targetElem (если он есть)
  *      3. Вызвать avatar.onDragEnd() или avatar.onDragCancel()
  *  Если нужно подтвердить перенос запросом на сервер, то avatar.onDragEnd(),
  *  а затем асинхронно, если сервер вернул ошибку, avatar.onDragCancel()
  *  При этом аватар должен уметь "откатываться" после onDragEnd.
  *  При любом завершении этого метода нужно (делается ниже):
  *  снять текущую индикацию переноса
- *  обнулить this._targetElem
+ *  обнулить this.targetElem
  */
 DropZone.prototype.onDragEnd = function(avatar, event) {
     /* override */

@@ -3,7 +3,7 @@
 
     var templateContainer = {};
 
-    function init(templateIDList) {
+    function compile(templateIDList) {
         for (var i = 0; i < arguments.length; i++) {
             var templateID = arguments[i];
             var templateSource = document.getElementById(templateID).innerHTML;
@@ -11,11 +11,11 @@
         }
     }
 
-    global.templates = {
-        init: init,
+    global.templateEngine = {
+        compile: compile,
         get: function(templateID) {
             if (!templateContainer[templateID]) {
-                init(templateID);
+                compile(templateID);
             }
             return templateContainer[templateID];
         }

@@ -5,7 +5,7 @@
  */
 function DragZone(elem) {
     elem.dragZone = this;
-    this._elem = elem;
+    this.elem = elem;
 }
 
 /**
