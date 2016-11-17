@@ -1,42 +1,44 @@
 function Ship(params) {
-    this.id = generateId();
-    this.state = params.state;
-    this.y = params.Y;
-    this.x = params.X;
+    this.id = params.id || Ship.generateId();
+    this.state = params.state || shipState.HIDDEN;
     this.length = params.length;
-    this.position = params.position;
+    this.position = params.position || HORIZONTAL;
+    this.cell = null;
     this.coords = [];
-    this.elem = createShipElem();
+    this.elem = params.elem;
     this.elem.ship = this;
 
-    function createShipElem() {
-        var width = 1;
-        var length = params.length;
-        var correction = {right: 0, bottom: params.length - 1};
-        if (params.position == HORIZONTAL) {
-            width = params.length;
-            length = 1;
-            correction.right = params.length - 1;
-            correction.bottom = 0;
-        }
-        var scale = 2;
-        var shipElem = document.createElement('div');
-        shipElem.dataset.id = params.id;
-        shipElem.dataset.length = params.length;
-        shipElem.dataset.position = params.position;
-        shipElem.className = 'ship draggable';
-        shipElem.style.width = width * scale + 'em';
-        shipElem.style.height = length * scale + 'em';
-        shipElem.style.paddingRight = correction.right + 'px';
-        shipElem.style.paddingBottom = correction.bottom + 'px';
-        return shipElem;
-    }
+    this.setCell = function (cell) {
+        this.cell = cell;
+        updateCoords.call(this);
+    };
 
-    function generateId() {
-        for (var e, t = 12, n = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", id = "", r = 0; t > r; r++) {
-            e = Math.floor(Math.random() * n.length);
-            id += n.substring(e, e + 1);
-        }
-        return id;
+    this.getCell = function () {
+        return this.cell;
+    };
+}
+
+Ship.generateId = function () {
+    var len = 12;
+    var availableDigits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var id = "";
+    for (var i = 0; i < len; i++) {
+        var randomIndex = Math.floor(Math.random() * availableDigits.length);
+        id += availableDigits.substring(randomIndex, randomIndex + 1);
+    }
+    return id;
+};
+
+function updateCoords() {
+    var x, y, coords = [];
+    for (var i = 0; i < this.length; i++) {
+        x = this.cell.x;
+        y = this.cell.y;
+        this.position == HORIZONTAL ? y += i : x += i;
+        coords.push({
+            x: x,
+            y: y,
+            state: detectionStatus.HIDDEN
+        });
     }
 }

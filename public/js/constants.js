@@ -1,5 +1,4 @@
 var CELL_CONTENT_CSS = ".battlefield-cell-content";
-var BATTLE_FIELD_CELL_CSS = ".battlefield-cell";
 var BATTLE_FIELD_TABLE_ID = "battlefield-table";
 var PORT_ZONE_ID = "port";
 
@@ -8,9 +7,9 @@ var HORIZONTAL = "h";
 var VERTICAL = "v";
 
 var busyStatus = {FREE: false, BUSY: true};
-var shipStatus = {HIDDEN: -1, WOUNDED: 0, KILLED: 1};
+var shipState = {HIDDEN: -1, WOUNDED: 0, KILLED: 1};
 var detectionStatus = {HIDDEN: 0, FOUNDED: 1};
-var fieldSize = {height: 10, width: 10};
+var battleFieldSize = {HEIGHT: 10, WIDTH: 10};
 
 var aroundCellsOffset = [
     [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1]

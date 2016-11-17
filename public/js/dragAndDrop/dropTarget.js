@@ -5,7 +5,7 @@
 function DropZone(elem) {
     elem.dropTarget = this;
     this.elem = elem;
-    this.targetElem = null;
+    this.target = null;
 }
 
 /**

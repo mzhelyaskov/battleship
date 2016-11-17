@@ -1,34 +1,45 @@
 function BattleField() {
+    var self = this;
     this.ships = {};
-    this.elem = createBattleField();
+    this.table = _("battlefield-table");
+    this.cells = createCells();
 
-    this.addShipToField = function (ship) {
-        this.ships[ship.id] = ship;
-    };
-
-    function createBattleField() {
-        var table = document.createElement('table');
-        table.id = "battlefield-table";
-        var battlefieldContainer = document.getElementById("battlefield-container");
-        battlefieldContainer.appendChild(table);
-        var rows = [];
-        var cellTemplate = templateEngine.get("battlefield-cell-template");
-        for (var row = 0; row < fieldSize.height; row++) {
-            busyAndFreeCellsMap[row] = [];
-            var cellsHtml = [];
-            for (var col = 0; col < fieldSize.width; col++) {
-                var cellLabel = "";
-                if (col === 0) {
-                    cellLabel += '<div class="marker marker-row">' + (row + 1) + "</div>"
-                }
-                if (row === 0) {
-                    cellLabel += '<div class="marker marker-col">' + letters[col] + "</div>"
-                }
-                cellsHtml.push(cellTemplate({col: col, row: row, cellLabel: cellLabel}));
-                busyAndFreeCellsMap[row][col] = busyStatus.FREE;
-            }
-            rows.push('<tr class="battlefield-row">' + cellsHtml.join("") + "</tr>")
+    function createCells() {
+        var cellElems = self.table.querySelectorAll(".battlefield-cell");
+        var cells = [];
+        for (var i = 0; i < cellElems.length; i++) {
+            var cellElem = cellElems[i];
+            var x = parseInt(cellElem.dataset.x, 10);
+            var y = parseInt(cellElem.dataset.y, 10);
+            cells[x] || (cells[x] = []);
+            cells[x][y] || (cells[x][y] = []);
+            cells[x][y] = new Cell({
+                elem: cellElem,
+                status: busyStatus.FREE
+            });
         }
-        table.innerHTML = rows.join("");
+        return cells;
     }
 }
+
+BattleField.prototype.addShip = function (cell, ship) {
+    cellUtils.insertShip(cell, ship);
+    this.ships[ship.id] = ship;
+    cell.state = busyStatus.BUSY;
+};
+
+BattleField.prototype.removeShipFromField = function (ship) {
+    delete this.ships[ship.id];
+    ship.cell && (ship.cell.state = busyStatus.FREE);
+    ship.cell = null;
+};
+
+BattleField.prototype.getCells = function () {
+    var cells = [];
+    for (var i = 0; i < this.cells.length; i++) {
+        for (var j = 0; j < this.cells[i].length; j++) {
+            cells.push(this.cells[i][j]);
+        }
+    }
+    return cells;
+};

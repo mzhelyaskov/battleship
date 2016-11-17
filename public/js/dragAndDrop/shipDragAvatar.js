@@ -5,6 +5,7 @@ function ShipDragAvatar(dragZone, dragElem) {
 extend(ShipDragAvatar, DragAvatar);
 
 ShipDragAvatar.prototype.initFromEvent = function(downX, downY, event) {
+    this.ship = this.dragElem.ship;
     var avatarElem = this.elem = this.dragElem.cloneNode(true);
     avatarElem.style.zIndex = 9999;
     avatarElem.style.position = 'absolute';

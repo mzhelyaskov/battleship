@@ -11,7 +11,7 @@
     <script src="/js/lib/cookieService.js"></script>
     <script src="/js/lib/dragAndDropUtils.js"></script>
     <script src="/js/lib/handlebars.js"></script>
-    <script src="/js/lib/util.js"></script>
+    <script src="/js/lib/utils.js"></script>
     <!-- dragAndDrop -->
     <script src="/js/dragAndDrop/dragManager.js"></script>
     <script src="/js/dragAndDrop/dragAvatar.js"></script>
@@ -32,34 +32,50 @@
 </div>
 <div id="muc"></div>
 
-<script id="battlefield-cell-template" type="text/x-handlebars-template">
-    <td class="battlefield-cell battlefield-cell-empty" data-y="{{row}}" data-x="{{col}}">
-        <div class="battlefield-cell-content">{{{cellLabel}}}</div>
-    </td>
+<script id="battlefield-template" type="text/x-handlebars-template">
+    <table id="battlefield-table">
+        {{#each rows}}
+        <tr class="battlefield-row">
+            {{#each this}}
+            <td class="battlefield-cell battlefield-cell-empty" data-x="{{x}}" data-y="{{y}}">
+                <div class="battlefield-cell-content">
+                    {{#if rowLabel}}<div class="marker marker-row">{{rowLabel}}</div>{{/if}}
+                    {{#if colLabel}}<div class="marker marker-col">{{colLabel}}</div>{{/if}}
+                </div>
+            </td>
+            {{/each}}
+        </tr>
+        {{/each}}
+    </table>
 </script>
-<script id="port-line" type="text/x-handlebars-template">
+<script id="port-template" type="text/x-handlebars-template">
+    {{#each port}}
     <div class="row">
         <div class="col-md-12">
-            {{#each ships}}
+            {{#each this}}
                 <div class="port-ship" style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;">
-                    <div data-id="{{id}}" data-length="{{size}}" data-position="{{position}}" class="{{className}}" style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;"></div>
+                    <div class="ship draggable" data-id="{{id}}" data-length="{{size}}" data-position="{{position}}" style="width: {{width}}em; height: {{height}}em; padding-right: {{paddingRight}}px; padding-bottom: {{paddingBottom}}px;"></div>
                 </div>
             {{/each}}
         </div>
     </div>
+    {{/each}}
 </script>
 <script src="/bower_components/jquery/dist/jquery.js"></script>
 <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/js/templates.js"></script>
 <script src="/js/constants.js"></script>
 
-<script src="/js/utils/gameUtils.js"></script>
+<script src="/js/utils/viewService.js"></script>
+
 <script src="/js/utils/shipUtils.js"></script>
+<script src="/js/utils/cellUtils.js"></script>
 <script src="/js/utils/dropZoneUtils.js"></script>
 
 <script src="/js/entity/battleField.js"></script>
-<script src="/js/entity/port.js"></script>
 <script src="/js/entity/ship.js"></script>
+<script src="/js/entity/cell.js"></script>
+<!-- TODO переделать на модульное подключение в каждом файле свои скрипты -->
 <%- scripts %>
 </body>
 </html>

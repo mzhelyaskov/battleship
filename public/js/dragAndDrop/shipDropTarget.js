@@ -4,38 +4,32 @@ function ShipDropZone(elem) {
 
 extend(ShipDropZone, DropZone);
 
-ShipDropZone.prototype.getTargetElem = function(avatar) {
-    var battleField = this.elem;
-    var cells = battleField.querySelectorAll(BATTLE_FIELD_CELL_CSS);
+ShipDropZone.prototype.getTargetElem = function (avatar) {
+    var cells = battleField.getCells();
     for (var i = 0; i < cells.length; i++) {
         var cell = cells[i];
-        if (isCellUnderAvatar(cell, avatar)) {
-            if (isCellAvailable(cell, avatar)) {
-                return this.targetElem = cell;
+        if (cellUtils.isUnderAvatar(cell, avatar)) {
+            if (cellUtils.isAvailableForShip(cell, avatar.ship)) {
+                return this.target = cell;
             }
         }
     }
-    return this.targetElem = null;
+    return this.target = null;
 };
 
-ShipDropZone.prototype.onDragEnter = function(cell, avatar) {
-    var placeholderParent = cell.querySelector(CELL_CONTENT_CSS);
-    avatar.showPlaceholder(placeholderParent);
+ShipDropZone.prototype.onDragEnter = function (cell, avatar) {
+    avatar.showPlaceholder(cell.getContentElem());
     avatar.hideAvatar();
 };
 
-ShipDropZone.prototype.onDragLeave = function(cell, avatar) {
+ShipDropZone.prototype.onDragLeave = function (cell, avatar) {
+    battleField.removeShipFromField(avatar.ship);
     avatar.hidePlaceholder();
     avatar.showAvatar();
 };
 
-ShipDropZone.prototype.onDragEnd = function(avatar) {
-    if (!this.targetElem) return;
-    var cellElem = this.targetElem;
-    var shipElem = avatar.dragElem;
-    var ship = shipElem.ship;
-    shipUtils.insertShipElemIntoContent(shipElem, cellElem);
-    shipUtils.updateProperties(ship, cellElem, avatar.elem);
-    battleField.addShipToField(ship);
+ShipDropZone.prototype.onDragEnd = function (avatar) {
+    if (!this.target) return;
+    battleField.addShip(this.target, avatar.ship);
     avatar.hidePlaceholder();
 };
