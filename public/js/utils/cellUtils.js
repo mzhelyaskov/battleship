@@ -42,11 +42,29 @@ var cellUtils = (function () {
     function insertShip(cell, ship) {
         var cellContent = cell.getContentElem();
         cellContent.appendChild(ship.elem);
+        ship.setCell(cell);
+        updateBusyStates(ship, busyStates.BUSY);
+    }
+
+    function removeShip(ship) {
+        ship.cell = null;
+        updateBusyStates(ship, busyStates.FREE);
+        ship.coords = [];
+    }
+    
+    function updateBusyStates(ship, state) {
+        for (var i = 0; i < ship.coords.length; i++) {
+            var x = ship.coords[i].x;
+            var y = ship.coords[i].y;
+            var cell = battleField.getCell(x, y);
+            cell.state = state;
+        }
     }
 
     return {
         isUnderAvatar: isUnderAvatar,
         isAvailableForShip: isAvailableForShip,
-        insertShip: insertShip
+        insertShip: insertShip,
+        removeShip: removeShip
     };
 }());

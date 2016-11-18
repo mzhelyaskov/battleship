@@ -23,7 +23,6 @@ ShipDropZone.prototype.onDragEnter = function (cell, avatar) {
 };
 
 ShipDropZone.prototype.onDragLeave = function (cell, avatar) {
-    battleField.removeShipFromField(avatar.ship);
     avatar.hidePlaceholder();
     avatar.showAvatar();
 };

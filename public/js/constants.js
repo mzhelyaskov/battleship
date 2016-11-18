@@ -6,7 +6,7 @@ var letters = "А,Б,В,Г,Д,Е,Ж,З,И,К".split(",");
 var HORIZONTAL = "h";
 var VERTICAL = "v";
 
-var busyStatus = {FREE: false, BUSY: true};
+var busyStates = {FREE: false, BUSY: true};
 var shipState = {HIDDEN: -1, WOUNDED: 0, KILLED: 1};
 var detectionStatus = {HIDDEN: 0, FOUNDED: 1};
 var battleFieldSize = {HEIGHT: 10, WIDTH: 10};

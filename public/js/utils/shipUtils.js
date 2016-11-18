@@ -15,6 +15,7 @@ var shipUtils = (function () {
                     elem: shipElem
                 })
             }
+            return ships;
         }
     }
 }());

@@ -15,7 +15,7 @@ function BattleField() {
             cells[x][y] || (cells[x][y] = []);
             cells[x][y] = new Cell({
                 elem: cellElem,
-                status: busyStatus.FREE
+                state: busyStates.FREE
             });
         }
         return cells;
@@ -25,13 +25,13 @@ function BattleField() {
 BattleField.prototype.addShip = function (cell, ship) {
     cellUtils.insertShip(cell, ship);
     this.ships[ship.id] = ship;
-    cell.state = busyStatus.BUSY;
+    console.log(ship);
 };
 
 BattleField.prototype.removeShipFromField = function (ship) {
     delete this.ships[ship.id];
-    ship.cell && (ship.cell.state = busyStatus.FREE);
-    ship.cell = null;
+    cellUtils.removeShip(ship);
+    console.log(ship);
 };
 
 BattleField.prototype.getCells = function () {

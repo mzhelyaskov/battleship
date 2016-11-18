@@ -27,6 +27,7 @@ ShipDragAvatar.prototype.createPlaceholder = function () {
 
 ShipDragAvatar.prototype.onDragStart = function () {
     this.dragElem.style.visibility = 'hidden';
+    battleField.removeShipFromField(this.ship);
 };
 
 ShipDragAvatar.prototype.onDragMove = function (event, dropZone) {

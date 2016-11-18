@@ -30,12 +30,12 @@ Ship.generateId = function () {
 };
 
 function updateCoords() {
-    var x, y, coords = [];
+    this.coords = [];
     for (var i = 0; i < this.length; i++) {
-        x = this.cell.x;
-        y = this.cell.y;
-        this.position == HORIZONTAL ? y += i : x += i;
-        coords.push({
+        var x = this.cell.x;
+        var y = this.cell.y;
+        this.position == HORIZONTAL ? x += i : y += i;
+        this.coords.push({
             x: x,
             y: y,
             state: detectionStatus.HIDDEN
