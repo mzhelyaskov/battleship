@@ -1,4 +1,4 @@
-var shipUtils = (function (global) {
+var shipUtils = (function () {
     return {
         createShips: function() {
             var port = _("port");

@@ -1,3 +1,5 @@
+
+//TODO в этом модуле есть зависимость от baggleField которую нужно както правлиьно разрешить.
 var cellUtils = (function () {
 
     function isUnderAvatar(cell, avatar) {
@@ -12,41 +14,39 @@ var cellUtils = (function () {
     }
 
     function isSuitableForShip(cell) {
-        if (cell.isBusy() || !isCoordsValid(cell.x, cell.y)) {
-            return false;
-        }
+        if (cell.isBusy()) return false;
         for (var offset in aroundCellsOffset) {
             var x = cell.x + aroundCellsOffset[offset][0];
             var y = cell.y + aroundCellsOffset[offset][1];
-            if (isCoordsValid(x, y) && cell.isBusy()) {
+            var verifiableCell = battleField.getCell(x, y);
+            if (verifiableCell && verifiableCell.isBusy()) {
                 return false;
             }
         }
         return true;
     }
 
-    function isCoordsValid(x, y) {
-        return x >= 0 && x < battleFieldSize.HEIGHT && y >= 0 && y < battleFieldSize.WIDTH;
-    }
-
     function isAvailableForShip(cell, ship) {
         var x = cell.x, y = cell.y;
         var suitableCellsCount = 0;
         for (var i = 0; i < ship.length; i++) {
-            ship.position == HORIZONTAL ? x += i : y += i;
-            if (isSuitableForShip(cell)) {
+            ship.position == HORIZONTAL ? x = cell.x + i : y = cell.y + i;
+            var verifiableCell = battleField.getCell(x, y);
+            if (verifiableCell && isSuitableForShip(verifiableCell)) {
                 suitableCellsCount++;
             }
         }
         return suitableCellsCount === ship.length;
     }
 
+    function insertShip(cell, ship) {
+        var cellContent = cell.getContentElem();
+        cellContent.appendChild(ship.elem);
+    }
+
     return {
         isUnderAvatar: isUnderAvatar,
         isAvailableForShip: isAvailableForShip,
-        insertShip: function (cell, ship) {
-            var cellContent = cell.getContentElem();
-            cellContent.appendChild(ship.elem);
-        }
+        insertShip: insertShip
     };
 }());

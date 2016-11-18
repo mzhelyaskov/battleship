@@ -43,3 +43,7 @@ BattleField.prototype.getCells = function () {
     }
     return cells;
 };
+
+BattleField.prototype.getCell = function (x, y) {
+    return this.cells[x] && this.cells[x][y];
+};

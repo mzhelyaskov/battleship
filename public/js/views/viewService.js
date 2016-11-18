@@ -7,7 +7,7 @@ var viewService = (function () {
             for (var col = 0; col < battleFieldSize.WIDTH; col++) {
                 var rowLabel = col === 0 && (row + 1);
                 var colLabel = row === 0 && letters[col];
-                cells.push({y: col, x: row, rowLabel: rowLabel, colLabel: colLabel});
+                cells.push({y: row, x: col, rowLabel: rowLabel, colLabel: colLabel});
             }
             rows.push(cells);
         }
