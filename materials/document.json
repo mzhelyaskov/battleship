@@ -1,1 +1,25 @@
-{"id":"1oWjkcdfhteP","state":-1,"y":0,"x":7,"len":3,"pos":"v","coords":[{"y":0,"x":7,"state":0},{"y":1,"x":7,"state":0},{"y":2,"x":7,"state":0}]}
+{
+    "id": "1oWjkcdfhteP",
+    "state": -1,
+    "y": 0,
+    "x": 7,
+    "len": 3,
+    "pos": "v",
+    "coords": [
+        {
+            "y": 0,
+            "x": 7,
+            "state": 0
+        },
+        {
+            "y": 1,
+            "x": 7,
+            "state": 0
+        },
+        {
+            "y": 2,
+            "x": 7,
+            "state": 0
+        }
+    ]
+}
